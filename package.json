@@ -1,0 +1,17 @@
+{
+  "name": "vic-vac-voe",
+  "version": "1.0.0",
+  "author": "opowell <opowell@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1"
+  },
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "package": "./node_modules/.bin/pkg ./server/server.js --out-path ./builds"
+  }
+}
