@@ -11,8 +11,7 @@
     "pkg": "^5.8.1"
   },
   "scripts": {
-    "dev": "node ./src/server.js",
-    "build": "vite build",
-    "package": "./node_modules/.bin/pkg ./src/server.js --out-path ./builds"
+    "dev": "node ./src/vic-vac-voe.js",
+    "build-linux": "./buildTools/build.sh"
   }
 }
