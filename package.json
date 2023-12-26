@@ -4,14 +4,15 @@
   "author": "opowell <opowell@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "pkg": "^5.8.1"
   },
   "scripts": {
-    "dev": "vite dev",
+    "dev": "node ./src/server.js",
     "build": "vite build",
-    "package": "./node_modules/.bin/pkg ./server/server.js --out-path ./builds"
+    "package": "./node_modules/.bin/pkg ./src/server.js --out-path ./builds"
   }
 }
