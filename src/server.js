@@ -10,6 +10,9 @@ if (process.argv[0].indexOf('node') > -1) {
   serverPath         = path.dirname(process.execPath);
 }
 
+console.log('serve', path.join(serverPath, '/src/source'))
+app.use('/source', express.static(path.join(serverPath, '/src/source')))
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(serverPath, '/src/player.html'))
 })
