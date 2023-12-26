@@ -3,10 +3,46 @@
 <head>
   <title>vic-vac-voe</title>
   <style>
+    body {
+      display: flex;
+      justify-content: center;
+      height: 100vh;
+      margin-bottom: 0px;
+      margin-top: 0px;
+    }
     #app {
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+    .board {
+      display: flex;
+      flex-direction: column;
+      background-color: #888;
+      padding: 1rem;
+      grid-gap: 1rem;
+      color: #444;
+    }
+    .board-row {
+      display: flex;
+      grid-gap: 1rem;
+    }
+    .board-space {
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #DDD;
+      font-size: 5rem;
+    }
+    .board-space:not(.used):hover {
+      background-color: #EEE;
+      color: #000;
+      cursor: pointer;
+    }
+    .used {
+      cursor: default;
     }
   </style>
   <script type="text/javascript" src="/source/vue.global.js"></script>
@@ -15,33 +51,46 @@
       const { createApp, ref } = Vue
       createApp({
         setup() {
-          const message = ref('Hello vue!')
+          const curPlayerX = ref(true)
+          const game = ref([
+            ['','',''],
+            ['','',''],
+            ['','','']
+          ])
+          const handleClick = (i,j) => {
+            if (game.value[i][j] !== '') return
+            game.value[i][j] = curPlayerX.value ? 'X' : 'O'
+            curPlayerX.value = !curPlayerX.value
+          }
           return {
-            message
+            game,
+            handleClick
           }
         }
       }).mount('#app')
     }
   </script>
 </head>
-<body style='background-color: #3d653d; color: rgba(255, 255, 255, 0.5); display: flex; justify-content: center; align-items: center; height: 100vh; font-size: 48pt; margin-bottom: 0px; margin-top: 0px'>
+<body>
   <div id="app">
-    <div>{{ message }}</div>
-    <div id='loggedIn' style='display: flex; flex-direction: column; align-items: center' hidden>
-          <div><b>READY</b></div>
-          <div>You are logged in as:</div>
-          <br>
-          <div style='font-size: 96pt; color: #fff' id='participantId'>-</div>
+    <h1>Tic Tac Toe</h1>
+    <div class="board">
+      <div
+        class="board-row"
+        v-for="(row, i) in game"
+        :key="'row-' + i"
+      >
+        <div
+          class="board-space"
+          :class="{ used: space !== ''}"
+          v-for="(space, j) in row"
+          :key="'space-' + i + '-' + j"
+          @click="handleClick(i,j)"
+        >
+          {{ space }}
+        </div>
       </div>
-      <div id='notLoggedIn' hidden>
-          <p>Participant id:</p>
-          <input id='pId' type='text'></input>
-          <p>Password:</p>
-          <input id='pId' type='text'></input>
-          <br>
-          <br>
-          <button>Login</button>
-      </div>  
+    </div>
   </div>
   <script>
     window.start()
