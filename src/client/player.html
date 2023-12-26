@@ -36,36 +36,78 @@
       background-color: #DDD;
       font-size: 5rem;
     }
-    .board-space:not(.used):hover {
+    .board-space:not(.used):not(.finished):hover {
       background-color: #EEE;
-      color: #000;
       cursor: pointer;
     }
     .used {
       cursor: default;
     }
+    .winner {
+      background-color: orange;
+    }
   </style>
   <script type="text/javascript" src="/source/vue.global.js"></script>
   <script>
     window.start = () => {
-      const { createApp, ref } = Vue
+      const { computed, createApp, ref } = Vue
       createApp({
         setup() {
-          const curPlayerX = ref(true)
-          const game = ref([
-            ['','',''],
-            ['','',''],
-            ['','','']
-          ])
+          const curPlayerX = ref(null)
+          const game = ref()
           const handleClick = (i,j) => {
             if (game.value[i][j] !== '') return
             game.value[i][j] = curPlayerX.value ? 'X' : 'O'
             curPlayerX.value = !curPlayerX.value
           }
-          return {
-            game,
-            handleClick
+          const startNewGame = () => {
+            game.value = [
+              ['','',''],
+              ['','',''],
+              ['','','']
+            ]
+            curPlayerX.value = true
           }
+          const getSpaceClasses = (space, i, j) => {
+            return { used: space !== '', finished: !!gameWin.value, winner: isWinner(i, j) }
+          }
+          const isWinner = (i, j) => {
+            if (!gameWin.value) return false
+            return !!gameWin.value.find((square => square[0] === i && square[1] === j))
+          }
+          startNewGame()
+          const lines = computed(() => {
+            const out = []
+            for (let i=0; i<3; i++) {
+              out.push([[i,0], [i,1], [i,2]])            
+              out.push([[0,i], [1,i], [2,i]])            
+            }
+            out.push([[0,0], [1,1], [2,2]])
+            out.push([[2,0], [1,1], [0,2]])
+            return out
+          })
+          const gameWin = computed(() => {
+            const s = game.value
+            return lines.value.find(l => s[l[0][0]][l[0][1]] !== '' && l.every(v => s[v[0]][v[1]] === s[l[0][0]][l[0][1]]))
+          })
+          const winner = computed(() => {
+            const v = gameWin.value
+            if (!v) return
+            return game.value[v[0][0]][v[0][1]]
+          })
+          window.jap = {
+            game,
+            gameWin,
+            getSpaceClasses,
+            handleClick,
+            startNewGame,
+            winner
+          }
+          const out = {}
+          Object.keys(window.jap).forEach(key => {
+            out[key] = window.jap[key]
+          })
+          return out
         }
       }).mount('#app')
     }
@@ -82,7 +124,7 @@
       >
         <div
           class="board-space"
-          :class="{ used: space !== ''}"
+          :class="getSpaceClasses(space, i, j)"
           v-for="(space, j) in row"
           :key="'space-' + i + '-' + j"
           @click="handleClick(i,j)"
@@ -91,6 +133,8 @@
         </div>
       </div>
     </div>
+    <h2 v-if="gameWin">{{ winner }} wins!</h2>
+    <h2><button v-if="gameWin" @click="startNewGame">Start new game</button></h2>
   </div>
   <script>
     window.start()
