@@ -49,12 +49,35 @@
   </style>
   <script type="text/javascript" src="/source/vue.global.js"></script>
   <script>
-    window.start = () => {
+    window.jap = {}
+    window.jap.init = () => {
       const { computed, createApp, ref } = Vue
       createApp({
         setup() {
+          // STATE
           const curPlayerX = ref(null)
           const game = ref()
+          // COMPUTED
+          const lines = computed(() => {
+            const out = []
+            for (let i=0; i<3; i++) {
+              out.push([[i,0], [i,1], [i,2]])            
+              out.push([[0,i], [1,i], [2,i]])            
+            }
+            out.push([[0,0], [1,1], [2,2]])
+            out.push([[2,0], [1,1], [0,2]])
+            return out
+          })
+          const gameWin = computed(() => {
+            const s = game.value
+            return lines.value.find(l => s[l[0][0]][l[0][1]] !== '' && l.every(v => s[v[0]][v[1]] === s[l[0][0]][l[0][1]]))
+          })
+          const winner = computed(() => {
+            const v = gameWin.value
+            if (!v) return
+            return game.value[v[0][0]][v[0][1]]
+          })
+          // METHODS
           const handleClick = (i,j) => {
             if (game.value[i][j] !== '') return
             game.value[i][j] = curPlayerX.value ? 'X' : 'O'
@@ -75,27 +98,9 @@
             if (!gameWin.value) return false
             return !!gameWin.value.find((square => square[0] === i && square[1] === j))
           }
+          // MOUNTED
           startNewGame()
-          const lines = computed(() => {
-            const out = []
-            for (let i=0; i<3; i++) {
-              out.push([[i,0], [i,1], [i,2]])            
-              out.push([[0,i], [1,i], [2,i]])            
-            }
-            out.push([[0,0], [1,1], [2,2]])
-            out.push([[2,0], [1,1], [0,2]])
-            return out
-          })
-          const gameWin = computed(() => {
-            const s = game.value
-            return lines.value.find(l => s[l[0][0]][l[0][1]] !== '' && l.every(v => s[v[0]][v[1]] === s[l[0][0]][l[0][1]]))
-          })
-          const winner = computed(() => {
-            const v = gameWin.value
-            if (!v) return
-            return game.value[v[0][0]][v[0][1]]
-          })
-          window.jap = {
+          const out = {
             game,
             gameWin,
             getSpaceClasses,
@@ -103,9 +108,8 @@
             startNewGame,
             winner
           }
-          const out = {}
-          Object.keys(window.jap).forEach(key => {
-            out[key] = window.jap[key]
+          Object.keys(out).forEach(key => {
+            window.jap[key] = out[key]
           })
           return out
         }
@@ -134,10 +138,10 @@
       </div>
     </div>
     <h2 v-if="gameWin">{{ winner }} wins!</h2>
-    <h2><button v-if="gameWin" @click="startNewGame">Start new game</button></h2>
+    <button v-if="gameWin" @click="startNewGame">Start new game</button>
   </div>
   <script>
-    window.start()
+    window.jap.init()
   </script>
 </body>
 </html>
