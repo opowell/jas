@@ -1,5 +1,5 @@
-# vicvacvoe
-Tic-tac-toe with Vue.js
+# jtray
+A javascript toolbox for realtime, multi-user applications.
 
 # Quick start
 1. Download for your platform.
