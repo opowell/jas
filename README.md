@@ -1,12 +1,12 @@
-# jtray
-A javascript toolbox for realtime, multi-user applications.
+# JAS
+A javascript app server.
 
 # Quick start
 1. Download for your platform.
 2. Unzip.
-3. Double click executable (vicvacvoe.sh).
+3. Double click executable (jas.sh).
 
 # Files
-- client - files for client
+- apps - files for apps
 - server - files for server
-- vicvacvoe.exe - executable
+- jas.sh - executable
