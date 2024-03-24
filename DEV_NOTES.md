@@ -1,4 +1,4 @@
 # vicvacvoe
-/client - files for client
+/apps - files for apps
 /server - files for server
 vicvacvoe.exe - executable

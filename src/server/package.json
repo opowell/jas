@@ -1,0 +1,11 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "author": "opowell <opowell@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.1",
+    "path": "^0.12.7"
+  },
+  "type": "module"
+}

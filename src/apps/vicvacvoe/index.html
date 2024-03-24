@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <title>vic-vac-voe</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="text/javascript" src="vue.global.js"></script>
+  <script type="text/javascript" src="vicvacvoe.js"></script>
+</head>
+<body>
+  <div id="app">
+    <h1>Vic-Vac-Voe</h1>
+    <h3>Tic-Tac-Toe in Vue</h3>
+    <div class="board">
+      <div
+        class="board-row"
+        v-for="(row, i) in game"
+        :key="'row-' + i"
+      >
+        <div
+          class="board-space"
+          :class="getSpaceClasses(space, i, j)"
+          v-for="(space, j) in row"
+          :key="'space-' + i + '-' + j"
+          @click="handleClick(i,j)"
+        >
+          {{ space }}
+        </div>
+      </div>
+    </div>
+    <h2 v-if="winningLine">{{ winner }} wins!</h2>
+    <button v-if="winningLine" @click="startNewGame">Start new game</button>
+  </div>
+  <script>
+    window.jap.init()
+  </script>
+</body>
+</html>
