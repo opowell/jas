@@ -1,4 +1,3 @@
-# vicvacvoe
+# javascript app server
 /apps - files for apps
 /server - files for server
-vicvacvoe.exe - executable
