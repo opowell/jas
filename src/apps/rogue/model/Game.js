@@ -33,11 +33,18 @@ class Game {
         this.cells[i][j].room = room
       }
     }
+    for (let i = x+1; i < x + w; i++) {
+      for (let j = y+1; j < y + h; j++) {
+        this.cells[i][j].type = 'floor'
+      }
+    }
     for (let i = y + 1; i < y + h; i++) {
       this.cells[x][i].type = 'verticalWall'
       this.cells[x+w][i].type = 'verticalWall'
     }
     this.cells[x + 2][y].type = 'door'
+    this.cells[x + 2][y-1].type = 'hallway'
+    this.cells[x + 2][y-2].type = 'hallway'
     this.cells[x][y + 2].type = 'door'
   }
   createGold(x, y, amount) {
@@ -92,23 +99,17 @@ class Game {
     for (let i = x - 1; i < x + 2; i++) {
       for (let j = y - 1; j < y + 2; j++) {
         const cell = this.cells[i][j]
-        if (cell.type) continue
-        this.cells[i][j].visible = false
+        if (cell.type === 'floor') {
+          this.cells[i][j].visible = false
+        }
       }
     }
     x = to.x
     y = to.y
-    if (to.room) {
-      for (let i = x - 1; i < x + 2; i++) {
-        for (let j = y - 1; j < y + 2; j++) {
-          const cell = this.cells[i][j]
-          if (cell.room === to.room) {
-            cell.visible = true
-          }
-        }
+    for (let i = x - 1; i < x + 2; i++) {
+      for (let j = y - 1; j < y + 2; j++) {
+        this.cells[i][j].visible = true
       }
-    } else {
-      to.visible = true
     }
     from.objects = from.objects.filter(o => o !== this.player)
     to.objects.push(this.player)

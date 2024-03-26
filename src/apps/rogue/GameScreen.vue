@@ -51,6 +51,10 @@ export default {
         return '@'
       }
       switch (cell.type) {
+        case 'hallway':
+          return ''
+        case 'floor':
+          return '&#8231;'
         case 'upLeftWall':
           return '&#x255D;'
         case 'upRightWall':
@@ -66,7 +70,7 @@ export default {
         case 'door':
           return '&#x256C;'
         default:
-          return '&#8231;'
+          return ''
       }
     },
     handleKeydown(event) {
@@ -97,6 +101,12 @@ export default {
           break
       }
     },
+    getBackgroundColor(cell) {
+      if (cell.type === 'hallway') {
+        return 'grey'
+      }
+      return ''
+    },
     getColor(cell) {
       if (cell.objects.length > 0) {
         if (cell.objects[0].type === 'gold') {
@@ -104,12 +114,14 @@ export default {
         }
         return 'yellow'
       }
-      if (cell.type) return 'brown'
-      return 'green'
+      if (cell.type === 'floor') return 'green'
+      if (cell.type !== 'floor') return 'brown'
+      return
     },
     square(cell) {
       return {
         color: this.getColor(cell),
+        'background-color': this.getBackgroundColor(cell),
         top: cell.y * SQUARE.HEIGHT + 'px',
         left: cell.x * SQUARE.WIDTH + 'px',
       }
