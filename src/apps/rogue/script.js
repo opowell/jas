@@ -18,6 +18,7 @@ const options = {
 }
 const { loadModule } = window['vue3-sfc-loader']
 
+import Game from './model/Game.js'
 window.launchpad = {}
 window.launchpad.init = () => {
   const { createApp, ref } = Vue
@@ -26,7 +27,7 @@ window.launchpad.init = () => {
       'GameScreen': Vue.defineAsyncComponent( () => loadModule('./GameScreen.vue', options) )
     },
     setup() {
-      const game = ref({})
+      const game = ref(new Game(40, 40))
       const out = {
         game
       }
