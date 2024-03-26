@@ -44,7 +44,7 @@ window.launchpad.init = () => {
         'LaunchpadApp': Vue.defineAsyncComponent( () => loadModule('./LaunchpadApp.vue', options) )
       },
       setup() {
-        const apps = ref(loadedApps)
+        const apps = ref(loadedApps.filter(a => a !== 'launchpad'))
         const handleAppClick = (id) => {
           window.location.href = window.location.origin + '/' + id
         }
