@@ -6,7 +6,6 @@ const app = express()
 const port = 3000
 
 let serverPath = undefined
-console.log(process.argv, process.cwd(), process.execPath)
 if (process.argv[0].indexOf('node') > -1) {
   serverPath         = process.cwd()
 } else {
