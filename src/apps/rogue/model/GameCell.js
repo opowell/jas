@@ -4,6 +4,7 @@ class GameCell {
     this.y = y
     this.objects = []
     this.visible = false
+    this.type = null
   }
 }
 export default GameCell

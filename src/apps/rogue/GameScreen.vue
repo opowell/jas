@@ -11,8 +11,8 @@
 </template>
 <script>
 const SQUARE = {
-  WIDTH: 16,
-  HEIGHT: 16
+  WIDTH: 11.25,
+  HEIGHT: 18
 }
 export default {
   name: 'GameScreen',
@@ -31,6 +31,12 @@ export default {
     },
     visibleCells() {
       return this.cells.filter(cell => cell.visible)
+    },
+    screenWidth() {
+      return this.game.width * SQUARE.WIDTH + 'px'
+    },
+    screenHeight() {
+      return this.game.height * SQUARE.HEIGHT + 'px'
     }
   },
   mounted() {
@@ -39,9 +45,29 @@ export default {
   methods: {
     cellContent(cell) {
       if (cell.objects.length > 0) {
+        if (cell.objects[0].type === 'gold') {
+          return '&#x273D;'
+        }
         return '@'
       }
-      return '&#8231'
+      switch (cell.type) {
+        case 'upLeftWall':
+          return '&#x255D;'
+        case 'upRightWall':
+          return '&#x255A;'
+        case 'downLeftWall':
+          return '&#x2557;'
+        case 'downRightWall':
+          return '&#x2554;'
+        case 'horizontalWall':
+          return '&#x2550;'
+        case 'verticalWall':
+          return '&#x2551;'
+        case 'door':
+          return '&#x256C;'
+        default:
+          return '&#8231;'
+      }
     },
     handleKeydown(event) {
       switch (event.key) {
@@ -71,10 +97,19 @@ export default {
           break
       }
     },
+    getColor(cell) {
+      if (cell.objects.length > 0) {
+        if (cell.objects[0].type === 'gold') {
+          return 'gold'
+        }
+        return 'yellow'
+      }
+      if (cell.type) return 'brown'
+      return 'green'
+    },
     square(cell) {
-      const color = cell.objects.length > 0 ? 'yellow' : 'green'
       return {
-        color,
+        color: this.getColor(cell),
         top: cell.y * SQUARE.HEIGHT + 'px',
         left: cell.x * SQUARE.WIDTH + 'px',
       }
@@ -84,10 +119,11 @@ export default {
 </script>
 <style scoped>
 .game-screen {
-  width: 50rem;
-  height: 50rem;
+  width: v-bind(screenWidth);
+  height: v-bind(screenHeight);
   background-color: black;
   position: relative;
+  font-family: 'Courier New';
 }
 .cell {
   width: v-bind(cellWidth);
