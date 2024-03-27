@@ -10,15 +10,18 @@ function isWall(location) {
   return location.type?.includes('Wall')
 }
 
+const WIDTH = 60
+const HEIGHT = 30
+
 class Game {
-  constructor(width, height) {
-    this.height = height
-    this.width = width
+  constructor() {
+    this.width = 60
+    this.height = 30
     this.locations = []
-    for (let i = 0; i < width; i++) {
+    for (let i = 0; i < WIDTH; i++) {
       const col = []
       this.locations.push(col)
-      for (let j = 0; j < height; j++) {
+      for (let j = 0; j < HEIGHT; j++) {
         col.push(new Location(i, j))
       }
     }
@@ -26,10 +29,17 @@ class Game {
     this.items = []
     this.characters = []
     this.player = this.createPlayer(30, 20)
-    this.addRoom(24, 17, 10, 6)
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        const x = (i*WIDTH/3) + Math.floor(Math.random()*WIDTH/3)
+        const y = (j*HEIGHT/3) + Math.floor(Math.random()*HEIGHT/3)
+        this.addRoom(x, y, Math.min(10, WIDTH-x-1), Math.min(6, HEIGHT - y-1))
+      }
+    }
     this.createGold(26, 19, 500)
   }
   addRoom(x, y, w, h) {
+    console.log('add', x, y, w, h)
     const room = new Room(x, y, w, h)
     this.locations[x][y].type = 'downRightWall'
     this.locations[x + w][y].type = 'downLeftWall'
@@ -53,17 +63,26 @@ class Game {
       this.locations[x][i].type = 'verticalWall'
       this.locations[x+w][i].type = 'verticalWall'
     }
-    this.locations[x + 2][y].type = 'door'
-    this.locations[x + 2][y-1].type = 'hallway'
-    this.locations[x + 2][y-2].type = 'hallway'
-    this.locations[x][y + 2].type = 'door'
+    if (x + 2 < WIDTH) {
+      console.log(x, y)
+      this.locations[x + 2][y].type = 'door'
+      if (y > 0) {
+        this.locations[x + 2][y-1].type = 'hallway'
+      }
+      if (y > 1) {
+        this.locations[x + 2][y-2].type = 'hallway'
+      }
+    }
+    if (y + 2 < HEIGHT) {
+      this.locations[x][y + 2].type = 'door'
+    }
   }
   hasWallBetween(a, b) {
     return isWall(this.locations[a.x][b.y]) || isWall(this.locations[b.x][a.y])
   }
   createGold(x, y, amount) {
-    const object = this.createItem(x, y)
-    object.type = 'gold'
+    const item = this.createItem(x, y)
+    item.type = 'gold'
   }
   createItem(x, y) {
     const object = new GameObject()
