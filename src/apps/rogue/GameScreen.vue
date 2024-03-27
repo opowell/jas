@@ -1,16 +1,16 @@
 <template>
   <div class="game-screen" @keydown="handleKeydown" tabindex="0" ref="screen">
     <div
-      v-for="cell in visibleCells"
-      :key="cell.x + '-' + cell.y"
-      :style="square(cell)"
-      class="cell"
-      v-html="cellContent(cell)"
+      v-for="location in visibleLocations"
+      :key="location.x + '-' + location.y"
+      :style="locationStyle(location)"
+      class="location"
+      v-html="locationContent(location)"
     />
   </div>
 </template>
 <script>
-const SQUARE = {
+const LOCATION = {
   WIDTH: 11.25,
   HEIGHT: 18
 }
@@ -21,36 +21,38 @@ export default {
   },
   data() {
     return {
-      cellWidth: SQUARE.WIDTH + 'px',
-      cellHeight: SQUARE.HEIGHT + 'px'
+      locationWidth: LOCATION.WIDTH + 'px',
+      locationHeight: LOCATION.HEIGHT + 'px'
     }
   },
   computed: {
-    cells() {
-      return this.game.cells.flat()
+    locations() {
+      return this.game.locations.flat()
     },
-    visibleCells() {
-      return this.cells.filter(cell => cell.visible)
+    visibleLocations() {
+      return this.locations.filter(location => location.visible)
     },
     screenWidth() {
-      return this.game.width * SQUARE.WIDTH + 'px'
+      return this.game.width * LOCATION.WIDTH + 'px'
     },
     screenHeight() {
-      return this.game.height * SQUARE.HEIGHT + 'px'
+      return this.game.height * LOCATION.HEIGHT + 'px'
     }
   },
   mounted() {
     this.$refs.screen.focus()
   },
   methods: {
-    cellContent(cell) {
-      if (cell.objects.length > 0) {
-        if (cell.objects[0].type === 'gold') {
-          return '&#x273D;'
-        }
+    locationContent(location) {
+      if (location.character) {
         return '@'
       }
-      switch (cell.type) {
+      if (location.item) {
+        if (location.item.type === 'gold') {
+          return '&#x273D;'
+        }
+      }
+      switch (location.type) {
         case 'hallway':
           return ''
         case 'floor':
@@ -101,29 +103,31 @@ export default {
           break
       }
     },
-    getBackgroundColor(cell) {
-      if (cell.type === 'hallway') {
+    getBackgroundColor(location) {
+      if (location.type === 'hallway') {
         return 'grey'
       }
       return ''
     },
-    getColor(cell) {
-      if (cell.objects.length > 0) {
-        if (cell.objects[0].type === 'gold') {
+    getColor(location) {
+      if (location.item) {
+        if (location.item.type === 'gold') {
           return 'gold'
         }
+      }
+      if (location.character) {
         return 'yellow'
       }
-      if (cell.type === 'floor') return 'green'
-      if (cell.type !== 'floor') return 'brown'
+      if (location.type === 'floor') return 'green'
+      if (location.type !== 'floor') return 'brown'
       return
     },
-    square(cell) {
+    locationStyle(location) {
       return {
-        color: this.getColor(cell),
-        'background-color': this.getBackgroundColor(cell),
-        top: cell.y * SQUARE.HEIGHT + 'px',
-        left: cell.x * SQUARE.WIDTH + 'px',
+        color: this.getColor(location),
+        'background-color': this.getBackgroundColor(location),
+        top: location.y * LOCATION.HEIGHT + 'px',
+        left: location.x * LOCATION.WIDTH + 'px',
       }
     }
   }
@@ -137,13 +141,13 @@ export default {
   position: relative;
   font-family: 'Courier New';
 }
-.cell {
-  width: v-bind(cellWidth);
-  height: v-bind(cellHeight);
+.location {
+  width: v-bind(locationWidth);
+  height: v-bind(locationHeight);
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: v-bind(cellHeight);
+  font-size: v-bind(locationHeight);
 }
 </style>
