@@ -27,7 +27,7 @@ window.launchpad.init = () => {
       'GameScreen': Vue.defineAsyncComponent( () => loadModule('./GameScreen.vue', options) )
     },
     setup() {
-      const game = ref(new Game(60, 30))
+      const game = ref(new Game())
       const out = {
         game
       }
