@@ -15,8 +15,8 @@ const HEIGHT = 30
 
 class Game {
   constructor() {
-    this.width = 60
-    this.height = 30
+    this.width = WIDTH
+    this.height = HEIGHT
     this.locations = []
     for (let i = 0; i < WIDTH; i++) {
       const col = []
@@ -108,28 +108,48 @@ class Game {
     return object
   }
   moveUp() {
-    this.movePlayer(this.player.location, this.locations[this.player.location.x][this.player.location.y-1])
+    const location = this.player.location
+    if (location.y === 0) return
+    this.movePlayer(location, this.locations[location.x][location.y-1])
   }
   moveDown() {
-    this.movePlayer(this.player.location, this.locations[this.player.location.x][this.player.location.y+1])
+    const location = this.player.location
+    if (location.y === this.height - 1) return
+    this.movePlayer(location, this.locations[location.x][location.y+1])
   }
   moveLeft() {
-    this.movePlayer(this.player.location, this.locations[this.player.location.x-1][this.player.location.y])
+    const location = this.player.location
+    if (location.x === 0) return
+    this.movePlayer(location, this.locations[location.x-1][location.y])
   }
   moveRight() {
-    this.movePlayer(this.player.location, this.locations[this.player.location.x+1][this.player.location.y])
+    const location = this.player.location
+    if (location.x === this.width - 1) return
+    this.movePlayer(location, this.locations[location.x+1][location.y])
   }
   moveUpLeft() {
-    this.movePlayer(this.player.location, this.locations[this.player.location.x-1][this.player.location.y-1])
+    const location = this.player.location
+    if (location.x === 0) return
+    if (location.y === 0) return
+    this.movePlayer(location, this.locations[location.x - 1][location.y - 1])
   }
   moveDownLeft() {
-    this.movePlayer(this.player.location, this.locations[this.player.location.x-1][this.player.location.y+1])
+    const location = this.player.location
+    if (location.x === 0) return
+    if (location.y === this.height - 1) return
+    this.movePlayer(location, this.locations[location.x-1][location.y+1])
   }
   moveUpRight() {
-    this.movePlayer(this.player.location, this.locations[this.player.location.x+1][this.player.location.y-1])
+    const location = this.player.location
+    if (location.x === this.width - 1) return
+    if (location.y === 0) return
+    this.movePlayer(location, this.locations[location.x+1][location.y-1])
   }
   moveDownRight() {
-    this.movePlayer(this.player.location, this.locations[this.player.location.x+1][this.player.location.y+1])
+    const location = this.player.location
+    if (location.x === this.width - 1) return
+    if (location.y === this.height - 1) return
+    this.movePlayer(location, this.locations[location.x+1][location.y+1])
   }
   movePlayer(from, to) {
     if (isWall(to)) return
@@ -138,8 +158,8 @@ class Game {
     }
     let x = from.x
     let y = from.y
-    for (let i = x - 1; i < x + 2; i++) {
-      for (let j = y - 1; j < y + 2; j++) {
+    for (let i = Math.max(x - 1, 0); i < Math.min(x + 2, this.width); i++) {
+      for (let j = Math.max(y - 1, 0); j < Math.min(y + 2, this.height); j++) {
         const cell = this.locations[i][j]
         if (cell.type === 'floor') {
           this.locations[i][j].visible = false
@@ -148,8 +168,8 @@ class Game {
     }
     x = to.x
     y = to.y
-    for (let i = x - 1; i < x + 2; i++) {
-      for (let j = y - 1; j < y + 2; j++) {
+    for (let i = Math.max(x - 1, 0); i < Math.min(x + 2, this.width); i++) {
+      for (let j = Math.max(y - 1, 0); j < Math.min(y + 2, this.height); j++) {
         this.locations[i][j].visible = true
       }
     }
