@@ -13,33 +13,91 @@ function isWall(location) {
 const WIDTH = 60
 const HEIGHT = 30
 
+/**
+ * 
+ * @param {number} x 
+ * @param {number} y 
+ * @returns a random integer from [x, y].
+ */
+const randomInt = (x, y = 0) => {
+  const min = Math.min(x, y)
+  const dist = Math.abs(x - y)
+  return Math.round(Math.random() * dist) + min
+}
+/**
+ * 
+ * @param {Array} array
+ * @returns a random element from the array.
+ */
+const randomElement = (array) => {
+  if (array.length === 0) return
+  const index = randomInt(array.length - 1)
+  return array[index]
+}
+
 class Game {
   constructor() {
     this.width = WIDTH
     this.height = HEIGHT
     this.locations = []
-    for (let i = 0; i < WIDTH; i++) {
-      const col = []
-      this.locations.push(col)
-      for (let j = 0; j < HEIGHT; j++) {
-        col.push(new Location(i, j))
-      }
-    }
     this.objects = []
     this.items = []
     this.characters = []
-    this.player = this.createPlayer(30, 20)
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        const x = (i*WIDTH/3) + Math.floor(Math.random()*WIDTH/3)
-        const y = (j*HEIGHT/3) + Math.floor(Math.random()*HEIGHT/3)
-        this.addRoom(x, y, Math.min(10, WIDTH-x-1), Math.min(6, HEIGHT - y-1))
-      }
-    }
+    this.createLocations()
+    this.addRooms()
+    this.player = this.createPlayer()
+    this.createStaircase()
     this.createGold(26, 19, 500)
   }
+  createLocations() {
+    for (let i = 0; i < this.width; i++) {
+      const col = []
+      this.locations.push(col)
+      for (let j = 0; j < this.height; j++) {
+        col.push(new Location(i, j))
+      }
+    }
+  }
+  addRooms() {
+    const minWidth = 4
+    const minHeight = 4
+    for (let i = 0; i < 3; i++) {
+      const minX = i * WIDTH / 3
+      const maxX = minX + WIDTH / 3 - 1 - (i < 2 ? 1 : 0)
+      for (let j = 0; j < 3; j++) {
+        const minY = j * HEIGHT / 3
+        const maxY = minY + HEIGHT / 3 - 1 - (j < 2 ? 1 : 0)
+        let x = randomInt(minX, maxX)
+        let y = randomInt(minY, maxY)
+        let goRight = Math.random() > 0.5
+        let goDown = Math.random() > 0.5
+        if (maxX - x < minWidth) {
+          goRight = false
+        }
+        if (x - minX < minWidth) {
+          goRight = true
+        }
+        if (maxY - y < minHeight) {
+          goDown = false
+        }
+        if (y - minY < minHeight) {
+          goDown = true
+        }
+        let width = randomInt(minWidth, goRight ? maxX - x : x - minX)
+        let height = randomInt(minHeight, goDown ? maxY - y : y - minY)
+        if (!goRight) {
+          x = x - width
+        }
+        if (!goDown) {
+          y = y - height
+        }
+        this.addRoom(x, y, width, height)
+      }
+    }
+  }
   addRoom(x, y, w, h) {
-    console.log('add', x, y, w, h)
+    w = w - 1
+    h = h - 1
     const room = new Room(x, y, w, h)
     this.locations[x][y].type = 'downRightWall'
     this.locations[x + w][y].type = 'downLeftWall'
@@ -52,6 +110,8 @@ class Game {
     for (let i = x; i <= x + w; i++) {
       for (let j = y; j <= y + h; j++) {
         this.locations[i][j].room = room
+        room.locations.push(this.locations[i][j])
+        this.locations[i][j].visible = true
       }
     }
     for (let i = x+1; i < x + w; i++) {
@@ -64,7 +124,6 @@ class Game {
       this.locations[x+w][i].type = 'verticalWall'
     }
     if (x + 2 < WIDTH) {
-      console.log(x, y)
       this.locations[x + 2][y].type = 'door'
       if (y > 0) {
         this.locations[x + 2][y-1].type = 'hallway'
@@ -84,6 +143,12 @@ class Game {
     const item = this.createItem(x, y)
     item.type = 'gold'
   }
+  createStaircase() {
+    const locations = this.locations.flat().filter(location => !location.item && location.type === 'floor')
+    const location = randomElement(locations)
+    const item = this.createItem(location.x, location.y)
+    item.type = 'staircase'
+  }
   createItem(x, y) {
     const object = new GameObject()
     const location = this.locations[x][y]
@@ -98,7 +163,11 @@ class Game {
     object.location = location
     return object
   }
-  createPlayer(x, y) {
+  createPlayer() {
+    const locations = this.locations.flat().filter(location => !location.character && location.type === 'floor')
+    const location = randomElement(locations)
+    const x = location.x
+    const y = location.y
     const object = this.createCharacter(x, y)
     for (let i = x - 1; i < x + 2; i++) {
       for (let j = y - 1; j < y + 2; j++) {
