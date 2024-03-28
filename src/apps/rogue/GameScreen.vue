@@ -5,6 +5,7 @@
       :key="location.x + '-' + location.y"
       :style="locationStyle(location)"
       class="location"
+      :class="locationClasses(location)"
       v-html="locationContent(location)"
     />
   </div>
@@ -43,13 +44,23 @@ export default {
     this.$refs.screen.focus()
   },
   methods: {
+    locationClasses(location) {
+      const classes = {}
+      if (location.item?.type === 'staircase') {
+        classes.flashing = true
+      }
+      return classes
+    },
     locationContent(location) {
       if (location.character) {
         return '@'
       }
       if (location.item) {
-        if (location.item.type === 'gold') {
-          return '&#x273D;'
+        switch (location.item.type) {
+          case 'gold':
+            return '&#x273D;'
+          case 'staircase':
+            return '&#x2630;'
         }
       }
       switch (location.type) {
@@ -104,6 +115,13 @@ export default {
       }
     },
     getBackgroundColor(location) {
+      if (location.item) {
+        switch (location.item.type) {
+          case 'staircase': {
+            return 'lightgreen'
+          }
+        }
+      }
       if (location.type === 'hallway') {
         return 'grey'
       }
@@ -111,8 +129,12 @@ export default {
     },
     getColor(location) {
       if (location.item) {
-        if (location.item.type === 'gold') {
-          return 'gold'
+        switch (location.item.type) {
+          case 'gold':
+            return 'gold'
+          case 'staircase': {
+            return 'black'
+          }
         }
       }
       if (location.character) {
@@ -149,5 +171,16 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: v-bind(locationHeight);
+}
+@keyframes example {
+  0%   {color: transparent;}
+  49%  {color:transparent;}
+  50% {color:black;}
+  100% {color:black;}
+}
+.flashing {
+  animation-name: example;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
 }
 </style>

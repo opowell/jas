@@ -4,6 +4,7 @@ class Room {
     this.y = y
     this.width = width
     this.height = height
+    this.locations = []
   }
 }
 export default Room
