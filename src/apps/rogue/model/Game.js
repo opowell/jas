@@ -99,19 +99,25 @@ class Game {
     w = w - 1
     h = h - 1
     const room = new Room(x, y, w, h)
+    room.lit = Math.random() > 0.5
     this.locations[x][y].type = 'downRightWall'
+    this.locations[x][y].visible = true
     this.locations[x + w][y].type = 'downLeftWall'
+    this.locations[x + w][y].visible = true
     this.locations[x][y + h].type = 'upRightWall'
+    this.locations[x][y + h].visible = true
     this.locations[x + w][y + h].type = 'upLeftWall'
+    this.locations[x + w][y + h].visible = true
     for (let i = x + 1; i < x + w; i++) {
       this.locations[i][y].type = 'horizontalWall'
+      this.locations[i][y].visible = true
       this.locations[i][y+h].type = 'horizontalWall'
+      this.locations[i][y+h].visible = true
     }
     for (let i = x; i <= x + w; i++) {
       for (let j = y; j <= y + h; j++) {
         this.locations[i][j].room = room
         room.locations.push(this.locations[i][j])
-        this.locations[i][j].visible = true
       }
     }
     for (let i = x+1; i < x + w; i++) {
@@ -121,7 +127,9 @@ class Game {
     }
     for (let i = y + 1; i < y + h; i++) {
       this.locations[x][i].type = 'verticalWall'
+      this.locations[x][i].visible = true
       this.locations[x+w][i].type = 'verticalWall'
+      this.locations[x+w][i].visible = true
     }
     if (x + 2 < WIDTH) {
       this.locations[x + 2][y].type = 'door'
@@ -135,9 +143,38 @@ class Game {
     if (y + 2 < HEIGHT) {
       this.locations[x][y + 2].type = 'door'
     }
+    this.createScroll(x + 1, y + 1)
+    this.createRing(x + 2, y + 1)
+    this.createPotion(x + 1, y + 2)
+    this.createWeapon(x + 2, y + 2)
+    this.createStick(x + 3, y + 2)
   }
   hasWallBetween(a, b) {
     return isWall(this.locations[a.x][b.y]) || isWall(this.locations[b.x][a.y])
+  }
+  createScroll(x, y) {
+    const item = this.createItem(x, y)
+    item.type = 'scroll'
+  }
+  createStick(x, y) {
+    const item = this.createItem(x, y)
+    item.type = 'stick'
+  }
+  createPotion(x, y) {
+    const item = this.createItem(x, y)
+    item.type = 'potion'
+  }
+  createRing(x, y) {
+    const item = this.createItem(x, y)
+    item.type = 'ring'
+  }
+  createWeapon(x, y) {
+    const item = this.createItem(x, y)
+    item.type = 'weapon'
+  }
+  createRing(x, y) {
+    const item = this.createItem(x, y)
+    item.type = 'ring'
   }
   createGold(x, y, amount) {
     const item = this.createItem(x, y)
