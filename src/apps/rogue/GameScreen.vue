@@ -12,8 +12,8 @@
 </template>
 <script>
 const LOCATION = {
-  WIDTH: 11.25,
-  HEIGHT: 18
+  WIDTH: 14,
+  HEIGHT: 22.4
 }
 export default {
   name: 'GameScreen',
@@ -31,7 +31,7 @@ export default {
       return this.game.locations.flat()
     },
     visibleLocations() {
-      return this.locations.filter(location => location.visible)
+      return this.locations.filter(location => location.visible || location.room?.lit)
     },
     screenWidth() {
       return this.game.width * LOCATION.WIDTH + 'px'
@@ -57,6 +57,16 @@ export default {
       }
       if (location.item) {
         switch (location.item.type) {
+          case 'stick':
+            return '&#x03B6;'
+          case 'scroll':
+            return '&#x266A;'
+          case 'potion':
+            return '&#x0021;'
+          case 'weapon':
+            return '&#x2191;'
+          case 'ring':
+            return '&#x25CB;'
           case 'gold':
             return '&#x273D;'
           case 'staircase':
@@ -128,20 +138,26 @@ export default {
       return ''
     },
     getColor(location) {
+      if (location.character) {
+        return 'yellow'
+      }
       if (location.item) {
         switch (location.item.type) {
+          case 'ring':
+          case 'weapon':
+          case 'stick':
+          case 'potion':
+          case 'scroll':
+            return '#5555ff'
           case 'gold':
-            return 'gold'
+            return '#ffff05'
           case 'staircase': {
             return 'black'
           }
         }
       }
-      if (location.character) {
-        return 'yellow'
-      }
-      if (location.type === 'floor') return 'green'
-      if (location.type !== 'floor') return 'brown'
+      if (location.type === 'floor') return '#00ff34'
+      if (location.type !== 'floor') return '#b74f00'
       return
     },
     locationStyle(location) {

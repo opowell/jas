@@ -5,6 +5,7 @@ class Room {
     this.width = width
     this.height = height
     this.locations = []
+    this.lit = true
   }
 }
 export default Room
