@@ -46,7 +46,7 @@ export default {
   methods: {
     locationClasses(location) {
       const classes = {}
-      if (location.item?.type === 'staircase') {
+      if (location.item?.type === 'staircase' && !location.character) {
         classes.flashing = true
       }
       return classes
@@ -125,6 +125,12 @@ export default {
       }
     },
     getBackgroundColor(location) {
+      if (location.character) {
+        if (location.type === 'hallway') {
+          return '#b3b3b3'
+        }
+        return 'black'
+      }
       if (location.item) {
         switch (location.item.type) {
           case 'staircase': {

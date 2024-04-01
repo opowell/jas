@@ -10,6 +10,10 @@ function isWall(location) {
   return location.type?.includes('Wall')
 }
 
+function canMoveTo(location) {
+  return ['floor', 'hallway', 'door'].includes(location.type)
+}
+
 const WIDTH = 60
 const HEIGHT = 30
 
@@ -59,9 +63,11 @@ class Game {
     }
   }
   addRooms() {
+    this.rooms = []
     const minWidth = 4
     const minHeight = 4
     for (let i = 0; i < 3; i++) {
+      this.rooms.push([])
       const minX = i * WIDTH / 3
       const maxX = minX + WIDTH / 3 - 1 - (i < 2 ? 1 : 0)
       for (let j = 0; j < 3; j++) {
@@ -91,7 +97,81 @@ class Game {
         if (!goDown) {
           y = y - height
         }
-        this.addRoom(x, y, width, height)
+        const room = this.addRoom(x, y, width, height)
+        this.rooms[i].push(room)
+      }
+    }
+    this.addDoors()
+    this.addHallways()
+  }
+  addHallways() {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        const room = this.rooms[i][j]
+        if (i < 2) {
+          const rightRoom = this.rooms[i + 1][j]
+          const y1 = room.rightDoor.y
+          const y2 = rightRoom.leftDoor.y
+          const x1 = room.x + room.width + 1
+          const x2 = rightRoom.x - 1
+          const xhat = randomInt(x1 + 1, x2 - 1)
+          for (let x = x1; x <= x2; x++) {
+            const y = x < xhat ? y1 : y2
+            this.locations[x][y].type = 'hallway'
+            this.locations[x][y].visible = true
+          }
+          for (let y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
+            this.locations[xhat][y].type = 'hallway'
+            this.locations[xhat][y].visible = true
+          }
+        }
+        if (j < 2) {
+          const downRoom = this.rooms[i][j + 1]
+          this.addVerticalRoom(room, downRoom)
+        }
+      }
+    }
+  }
+  addVerticalRoom(A, B) {
+    const x1 = A.downDoor.x
+    const x2 = B.upDoor.x
+    const y1 = A.y + A.height + 1
+    const y2 = B.y - 1
+    const yhat = randomInt(y1 + 1, y2 - 1)
+    for (let y = y1; y <= y2; y++) {
+      const x = y < yhat ? x1 : x2
+      this.locations[x][y].type = 'hallway'
+      this.locations[x][y].visible = true
+    }
+    for (let x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
+      this.locations[x][yhat].type = 'hallway'
+      this.locations[x][yhat].visible = true
+    }
+  }
+  addDoors() {
+    for (let i = 0; i < 3; i++) {
+      const left = i > 0
+      const right = i < 2
+      for (let j = 0; j < 3; j++) {
+        const room = this.rooms[i][j]
+        const up = j > 0
+        const down = j < 2
+        if (left) {
+          const y = room.y + randomInt(room.height - 2) + 1
+          room.setLeftDoor(this.locations[room.x][y])
+        }
+        if (right) {
+          const y = room.y + randomInt(room.height - 2) + 1
+          room.setRightDoor(this.locations[room.x + room.width][y])
+        }
+        if (up) {
+          const x = room.x + randomInt(room.width - 2) + 1
+          room.setUpDoor(this.locations[x][room.y])
+        }
+        if (down) {
+          const x = room.x + randomInt(room.width - 2) + 1
+          room.setDownDoor(this.locations[x][room.y + room.height])
+        }
       }
     }
   }
@@ -131,23 +211,12 @@ class Game {
       this.locations[x+w][i].type = 'verticalWall'
       this.locations[x+w][i].visible = true
     }
-    if (x + 2 < WIDTH) {
-      this.locations[x + 2][y].type = 'door'
-      if (y > 0) {
-        this.locations[x + 2][y-1].type = 'hallway'
-      }
-      if (y > 1) {
-        this.locations[x + 2][y-2].type = 'hallway'
-      }
-    }
-    if (y + 2 < HEIGHT) {
-      this.locations[x][y + 2].type = 'door'
-    }
     this.createScroll(x + 1, y + 1)
     this.createRing(x + 2, y + 1)
     this.createPotion(x + 1, y + 2)
     this.createWeapon(x + 2, y + 2)
     this.createStick(x + 3, y + 2)
+    return room
   }
   hasWallBetween(a, b) {
     return isWall(this.locations[a.x][b.y]) || isWall(this.locations[b.x][a.y])
@@ -259,6 +328,7 @@ class Game {
   }
   movePlayer(from, to) {
     if (isWall(to)) return
+    if (!canMoveTo(to)) return
     if (isDiagonalMove(from, to) && this.hasWallBetween(from, to)) {
       return
     }
