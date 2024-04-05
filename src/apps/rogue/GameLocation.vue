@@ -34,6 +34,9 @@ export default {
       if (location.character) {
         return '@'
       }
+      if (location.mapped && location.item?.type === 'staircase') {
+        return '&#x2630;'
+      }
       if (location.item && location.visible) {
         switch (location.item.type) {
           case 'stick':
@@ -73,34 +76,6 @@ export default {
           return '&#x256C;'
         default:
           return ''
-      }
-    },
-    handleKeydown(event) {
-      switch (event.key) {
-        case 'h':
-          this.game.moveLeft()
-          break
-        case 'j':
-          this.game.moveDown()
-          break
-        case 'k':
-          this.game.moveUp()
-          break
-        case 'l':
-          this.game.moveRight()
-          break
-        case 'z':
-          this.game.moveUpLeft()
-          break
-        case 'b':
-          this.game.moveDownLeft()
-          break
-        case 'u':
-          this.game.moveUpRight()
-          break
-        case 'n':
-          this.game.moveDownRight()
-          break
       }
     },
     getBackgroundColor(location) {

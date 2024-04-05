@@ -10,6 +10,20 @@ function isWall(location) {
   return location.type?.includes('Wall')
 }
 
+function isCrossingThreshhold(from, to) {
+  if (isDoor(from) && isFloor(to)) return true
+  if (isDoor(from) && isHallway(to)) return true
+  return false
+}
+
+function isFloor(location) {
+  return location.type === 'floor'
+}
+
+function isHallway(location) {
+  return location.type === 'hallway'
+}
+
 function isDoor(location) {
   return location.type === 'door'
 }
@@ -275,6 +289,13 @@ class Game {
         this.locations[i][j].visible = true
       }
     }
+    if (location.room?.lit) {
+      location.room.locations.forEach(r => {
+        r.visible = true
+        r.mapped = true
+        r.seen = true
+      })
+    }
     return object
   }
   canMoveTo(location) {
@@ -285,72 +306,82 @@ class Game {
     if (location.y === 0) return
     if (!canMoveTo(this.locations[location.x][location.y-1])) return
     this.movePlayer(location, this.locations[location.x][location.y - 1])
-    this.runExcept('down')
+    this.runExcept('down', null, 'up')
   }
   runDown() {
     const location = this.player.location
     if (location.y === this.height - 1) return
     if (!canMoveTo(this.locations[location.x][location.y+1])) return
     this.movePlayer(location, this.locations[location.x][location.y + 1])
-    this.runExcept('up')
+    this.runExcept('up', null, 'down')
   }
   runLeft() {
     const location = this.player.location
     if (location.x === 0) return
     if (!canMoveTo(this.locations[location.x-1][location.y])) return
     this.movePlayer(location, this.locations[location.x-1][location.y])
-    this.runExcept('right')
+    this.runExcept('right', null, 'left')
   }
   runRight() {
     const location = this.player.location
     if (location.x === this.width - 1) return
     if (!canMoveTo(this.locations[location.x+1][location.y])) return
     this.movePlayer(location, this.locations[location.x+1][location.y])
-    this.runExcept('left')
+    this.runExcept('left', null, 'right')
   }
-  runExcept(direction) {
-    console.log('runExcept')
+  runExcept(exceptDirection, lastNumPossibleLocs = null, prefDir) {
     const location = this.player.location
     const possibleLocations = []
-    if (direction !== 'up') {
+    if (exceptDirection !== 'up') {
       const nextLoc = this.locations[location.x][location.y - 1]
-      if (canMoveTo(nextLoc)) {
+      if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
+          moveDir: 'up',
           cameFrom: 'down'
         })
       }
     }
-    if (direction !== 'down') {
+    if (exceptDirection !== 'down') {
       const nextLoc = this.locations[location.x][location.y + 1]
-      if (canMoveTo(nextLoc)) {
+      if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
+          moveDir: 'down',
           cameFrom: 'up'
         })
       }
     }
-    if (direction !== 'left') {
+    if (exceptDirection !== 'left') {
       const nextLoc = this.locations[location.x - 1][location.y]
-      if (canMoveTo(nextLoc)) {
+      if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
+          moveDir: 'left',
           cameFrom: 'right'
         })
-        }
+      }
     }
-    if (direction !== 'right') {
+    if (exceptDirection !== 'right') {
       const nextLoc = this.locations[location.x + 1][location.y]
-      if (canMoveTo(nextLoc)) {
+      if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
+          moveDir: 'right',
           cameFrom: 'left'
         })
       }
     }
-    if (possibleLocations.length === 1) {
-      this.movePlayer(location, possibleLocations[0].location)
-      this.runExcept(possibleLocations[0].cameFrom)
+    if (isFloor(location) || possibleLocations.length === 1 || lastNumPossibleLocs === null || possibleLocations.length === lastNumPossibleLocs) {
+      let destination = possibleLocations.find(loc => loc.moveDir === prefDir)
+      if (!destination && possibleLocations.length === 1 && isHallway(location)) {
+        destination = possibleLocations[0]
+      }
+      console.log(destination, possibleLocations, prefDir)
+      if (destination) {
+        this.movePlayer(location, destination.location)
+        this.runExcept(destination.cameFrom, possibleLocations.length, destination.moveDir)
+      }
     }
   }
   moveUp() {
@@ -420,6 +451,7 @@ class Game {
     for (let i = Math.max(x - 1, 0); i < Math.min(x + 2, this.width); i++) {
       for (let j = Math.max(y - 1, 0); j < Math.min(y + 2, this.height); j++) {
         this.locations[i][j].seen = true
+        this.locations[i][j].mapped = true
         this.locations[i][j].visible = true
       }
     }
@@ -430,11 +462,13 @@ class Game {
       if (from.room) {
         from.room.locations.filter(location => location.type === 'floor').forEach(location => location.visible = false)
       }
-      if (to.room && to.room.lit) to.room.locations.forEach(location => {
-        location.seen = true
-        location.visible = true
-        location.mapped = true
-      })
+      if (to.room && to.room.lit) {
+        to.room.locations.forEach(location => {
+          location.seen = true
+          location.visible = true
+          location.mapped = true
+        })
+      }
     }
   }
 }
