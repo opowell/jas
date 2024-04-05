@@ -5,7 +5,7 @@ class Room {
     this.width = width
     this.height = height
     this.locations = []
-    this.lit = true
+    this.lit = false
   }
   setRightDoor(location) {
     this.rightDoor = location

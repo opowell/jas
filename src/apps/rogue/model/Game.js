@@ -10,6 +10,10 @@ function isWall(location) {
   return location.type?.includes('Wall')
 }
 
+function isDoor(location) {
+  return location.type === 'door'
+}
+
 function canMoveTo(location) {
   return ['floor', 'hallway', 'door'].includes(location.type)
 }
@@ -118,21 +122,19 @@ class Game {
           for (let x = x1; x <= x2; x++) {
             const y = x < xhat ? y1 : y2
             this.locations[x][y].type = 'hallway'
-            this.locations[x][y].visible = true
           }
           for (let y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
             this.locations[xhat][y].type = 'hallway'
-            this.locations[xhat][y].visible = true
           }
         }
         if (j < 2) {
           const downRoom = this.rooms[i][j + 1]
-          this.addVerticalRoom(room, downRoom)
+          this.addVerticalHallway(room, downRoom)
         }
       }
     }
   }
-  addVerticalRoom(A, B) {
+  addVerticalHallway(A, B) {
     const x1 = A.downDoor.x
     const x2 = B.upDoor.x
     const y1 = A.y + A.height + 1
@@ -141,11 +143,9 @@ class Game {
     for (let y = y1; y <= y2; y++) {
       const x = y < yhat ? x1 : x2
       this.locations[x][y].type = 'hallway'
-      this.locations[x][y].visible = true
     }
     for (let x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
       this.locations[x][yhat].type = 'hallway'
-      this.locations[x][yhat].visible = true
     }
   }
   addDoors() {
@@ -181,18 +181,12 @@ class Game {
     const room = new Room(x, y, w, h)
     room.lit = Math.random() > 0.5
     this.locations[x][y].type = 'downRightWall'
-    this.locations[x][y].visible = true
     this.locations[x + w][y].type = 'downLeftWall'
-    this.locations[x + w][y].visible = true
     this.locations[x][y + h].type = 'upRightWall'
-    this.locations[x][y + h].visible = true
     this.locations[x + w][y + h].type = 'upLeftWall'
-    this.locations[x + w][y + h].visible = true
     for (let i = x + 1; i < x + w; i++) {
       this.locations[i][y].type = 'horizontalWall'
-      this.locations[i][y].visible = true
       this.locations[i][y+h].type = 'horizontalWall'
-      this.locations[i][y+h].visible = true
     }
     for (let i = x; i <= x + w; i++) {
       for (let j = y; j <= y + h; j++) {
@@ -207,9 +201,7 @@ class Game {
     }
     for (let i = y + 1; i < y + h; i++) {
       this.locations[x][i].type = 'verticalWall'
-      this.locations[x][i].visible = true
       this.locations[x+w][i].type = 'verticalWall'
-      this.locations[x+w][i].visible = true
     }
     this.createScroll(x + 1, y + 1)
     this.createRing(x + 2, y + 1)
@@ -258,6 +250,9 @@ class Game {
   createItem(x, y) {
     const object = new GameObject()
     const location = this.locations[x][y]
+    if (isWall(location) || isDoor(location) || !!location.item) {
+      return object
+    }
     location.item = object
     object.location = location
     return object
@@ -281,6 +276,82 @@ class Game {
       }
     }
     return object
+  }
+  canMoveTo(location) {
+    return !isWall(location)
+  }
+  runUp() {
+    const location = this.player.location
+    if (location.y === 0) return
+    if (!canMoveTo(this.locations[location.x][location.y-1])) return
+    this.movePlayer(location, this.locations[location.x][location.y - 1])
+    this.runExcept('down')
+  }
+  runDown() {
+    const location = this.player.location
+    if (location.y === this.height - 1) return
+    if (!canMoveTo(this.locations[location.x][location.y+1])) return
+    this.movePlayer(location, this.locations[location.x][location.y + 1])
+    this.runExcept('up')
+  }
+  runLeft() {
+    const location = this.player.location
+    if (location.x === 0) return
+    if (!canMoveTo(this.locations[location.x-1][location.y])) return
+    this.movePlayer(location, this.locations[location.x-1][location.y])
+    this.runExcept('right')
+  }
+  runRight() {
+    const location = this.player.location
+    if (location.x === this.width - 1) return
+    if (!canMoveTo(this.locations[location.x+1][location.y])) return
+    this.movePlayer(location, this.locations[location.x+1][location.y])
+    this.runExcept('left')
+  }
+  runExcept(direction) {
+    console.log('runExcept')
+    const location = this.player.location
+    const possibleLocations = []
+    if (direction !== 'up') {
+      const nextLoc = this.locations[location.x][location.y - 1]
+      if (canMoveTo(nextLoc)) {
+        possibleLocations.push({
+          location: nextLoc,
+          cameFrom: 'down'
+        })
+      }
+    }
+    if (direction !== 'down') {
+      const nextLoc = this.locations[location.x][location.y + 1]
+      if (canMoveTo(nextLoc)) {
+        possibleLocations.push({
+          location: nextLoc,
+          cameFrom: 'up'
+        })
+      }
+    }
+    if (direction !== 'left') {
+      const nextLoc = this.locations[location.x - 1][location.y]
+      if (canMoveTo(nextLoc)) {
+        possibleLocations.push({
+          location: nextLoc,
+          cameFrom: 'right'
+        })
+        }
+    }
+    if (direction !== 'right') {
+      const nextLoc = this.locations[location.x + 1][location.y]
+      if (canMoveTo(nextLoc)) {
+        possibleLocations.push({
+          location: nextLoc,
+          cameFrom: 'left'
+        })
+      }
+    }
+    if (possibleLocations.length === 1) {
+      this.movePlayer(location, possibleLocations[0].location)
+      this.runExcept(possibleLocations[0].cameFrom)
+    }
   }
   moveUp() {
     const location = this.player.location
@@ -336,9 +407,11 @@ class Game {
     let y = from.y
     for (let i = Math.max(x - 1, 0); i < Math.min(x + 2, this.width); i++) {
       for (let j = Math.max(y - 1, 0); j < Math.min(y + 2, this.height); j++) {
-        const cell = this.locations[i][j]
-        if (cell.type === 'floor') {
-          this.locations[i][j].visible = false
+        const location = this.locations[i][j]
+        if (location.type === 'floor') {
+          if (!location.item || to.room !== from.room) {
+            location.visible = location.room.lit
+          }
         }
       }
     }
@@ -346,12 +419,23 @@ class Game {
     y = to.y
     for (let i = Math.max(x - 1, 0); i < Math.min(x + 2, this.width); i++) {
       for (let j = Math.max(y - 1, 0); j < Math.min(y + 2, this.height); j++) {
+        this.locations[i][j].seen = true
         this.locations[i][j].visible = true
       }
     }
     from.character = null
     to.character = this.player
     this.player.location = to
+    if (from.room !== to.room) {
+      if (from.room) {
+        from.room.locations.filter(location => location.type === 'floor').forEach(location => location.visible = false)
+      }
+      if (to.room && to.room.lit) to.room.locations.forEach(location => {
+        location.seen = true
+        location.visible = true
+        location.mapped = true
+      })
+    }
   }
 }
 export default Game
