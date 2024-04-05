@@ -26,7 +26,16 @@ export default {
       return this.game.locations.flat()
     },
     visibleLocations() {
-      return this.locations.filter(location => location.visible || location.mapped)
+      return this.locations.filter(location => {
+        return location.visible ||
+          (
+            location.mapped &&
+            (
+              location.room?.lit ||
+              location.item?.type === 'staircase'
+            )
+          )
+      })
     },
     screenWidth() {
       return this.game.width * LOCATION.WIDTH + 'px'
