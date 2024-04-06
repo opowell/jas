@@ -306,30 +306,30 @@ class Game {
     if (location.y === 0) return
     if (!canMoveTo(this.locations[location.x][location.y-1])) return
     this.movePlayer(location, this.locations[location.x][location.y - 1])
-    this.runExcept('down', null, 'up')
+    this.runExcept('down', 'up')
   }
   runDown() {
     const location = this.player.location
     if (location.y === this.height - 1) return
     if (!canMoveTo(this.locations[location.x][location.y+1])) return
     this.movePlayer(location, this.locations[location.x][location.y + 1])
-    this.runExcept('up', null, 'down')
+    this.runExcept('up', 'down')
   }
   runLeft() {
     const location = this.player.location
     if (location.x === 0) return
     if (!canMoveTo(this.locations[location.x-1][location.y])) return
     this.movePlayer(location, this.locations[location.x-1][location.y])
-    this.runExcept('right', null, 'left')
+    this.runExcept('right', 'left')
   }
   runRight() {
     const location = this.player.location
     if (location.x === this.width - 1) return
     if (!canMoveTo(this.locations[location.x+1][location.y])) return
     this.movePlayer(location, this.locations[location.x+1][location.y])
-    this.runExcept('left', null, 'right')
+    this.runExcept('left', 'right')
   }
-  runExcept(exceptDirection, lastNumPossibleLocs = null, prefDir) {
+  runExcept(exceptDirection, prefDir) {
     const location = this.player.location
     const possibleLocations = []
     if (exceptDirection !== 'up') {
@@ -372,15 +372,14 @@ class Game {
         })
       }
     }
-    if (isFloor(location) || possibleLocations.length === 1 || lastNumPossibleLocs === null || possibleLocations.length === lastNumPossibleLocs) {
+    if (isFloor(location) || (possibleLocations.length === 1 && isHallway(location))) {
       let destination = possibleLocations.find(loc => loc.moveDir === prefDir)
       if (!destination && possibleLocations.length === 1 && isHallway(location)) {
         destination = possibleLocations[0]
       }
-      console.log(destination, possibleLocations, prefDir)
       if (destination) {
         this.movePlayer(location, destination.location)
-        this.runExcept(destination.cameFrom, possibleLocations.length, destination.moveDir)
+        this.runExcept(destination.cameFrom, destination.moveDir)
       }
     }
   }
