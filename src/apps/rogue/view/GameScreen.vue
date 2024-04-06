@@ -1,14 +1,18 @@
 <template>
   <div class="game-screen" @keydown="handleKeydown" tabindex="0" ref="screen">
-    <GameLocation
-      v-for="location in visibleLocations"
-      :key="location.x + '-' + location.y"
-      :location="location"
-    />
+    <GameMessage :message="message" :show-more="game.messages.length > 1"/>
+    <div class="map">
+      <GameLocation
+        v-for="location in visibleLocations"
+        :key="location.x + '-' + location.y"
+        :location="location"
+      />
+    </div>
   </div>
 </template>
 <script>
-import GameLocation from './GameLocation.vue'
+import Location from './Location.vue'
+import Message from './Message.vue'
 const LOCATION = {
   WIDTH: 14,
   HEIGHT: 22.4
@@ -16,12 +20,19 @@ const LOCATION = {
 export default {
   name: 'GameScreen',
   components: {
-    GameLocation
+    GameLocation: Location,
+    GameMessage: Message
   },
   props: {
     game: { type: Object, required: true }
   },
   computed: {
+    message() {
+      if (this.game.messages.length > 0) {
+        return this.game.messages[0]
+      }
+      return ''
+    },
     locations() {
       return this.game.locations.flat()
     },
@@ -49,7 +60,16 @@ export default {
   },
   methods: {
     handleKeydown(event) {
+      if (this.game.messages.length > 1 && event.key !== ' ') {
+        return
+      }
+      if (this.game.messages.length === 1) {
+        this.game.clearCurrentMessage()
+      }
       switch (event.key) {
+        case ' ':
+          this.game.clearCurrentMessage()
+          break
         case 'H':
           this.game.runLeft()
           break
@@ -93,10 +113,17 @@ export default {
 </script>
 <style scoped>
 .game-screen {
+  background-color: black;
+  font-family: IBMVGA8;
+}
+@font-face {
+  font-family: "IBMVGA8";
+  src: url("Web437_IBM_VGA_8x14.woff") format('woff');
+  /* src: url("WebPlus_IBM_BIOS.woff") format('woff'); */
+}
+.map {
   width: v-bind(screenWidth);
   height: v-bind(screenHeight);
-  background-color: black;
   position: relative;
-  font-family: 'Courier New';
 }
 </style>
