@@ -14,8 +14,8 @@
 import Location from './Location.vue'
 import Message from './Message.vue'
 const LOCATION = {
-  WIDTH: 14,
-  HEIGHT: 22.4
+  WIDTH: 12,
+  HEIGHT: 21
 }
 export default {
   name: 'GameScreen',
