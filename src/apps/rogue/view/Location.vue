@@ -32,7 +32,7 @@ export default {
     },
     locationContent(location) {
       if (location.character) {
-        return '@'
+        return '&#x263A;'
       }
       if (location.mapped && location.item?.type === 'staircase') {
         return '&#x2630;'

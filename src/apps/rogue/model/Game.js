@@ -1,6 +1,7 @@
 import Location from './Location.js'
 import GameObject from './GameObject.js'
 import Room from './Room.js'
+import Character from './Character.js'
 
 function isDiagonalMove(a, b) {
   return Math.abs(Math.abs(a.x - b.x) - Math.abs(a.y - b.y)) === 0
@@ -70,6 +71,10 @@ class Game {
     this.player = this.createPlayer()
     this.createStaircase()
     this.createGold(26, 19, 500)
+    this.messages = ['Welcome to the Dungeons of Doom']
+  }
+  clearCurrentMessage() {
+    this.messages.splice(0, 1)
   }
   createLocations() {
     for (let i = 0; i < this.width; i++) {
@@ -272,11 +277,14 @@ class Game {
     return object
   }
   createCharacter(x, y) {
-    const object = new GameObject()
+    const character = new Character(this)
     const location = this.locations[x][y]
-    location.character = object
-    object.location = location
-    return object
+    location.character = character
+    character.location = location
+    return character
+  }
+  addMessage(message) {
+    this.messages.push(message)
   }
   createPlayer() {
     const locations = this.locations.flat().filter(location => !location.character && location.type === 'floor')
@@ -456,7 +464,7 @@ class Game {
     }
     from.character = null
     to.character = this.player
-    this.player.location = to
+    this.player.moveTo(to)
     if (from.room !== to.room) {
       if (from.room) {
         from.room.locations.filter(location => location.type === 'floor').forEach(location => location.visible = false)

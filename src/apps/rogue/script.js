@@ -24,7 +24,7 @@ window.launchpad.init = () => {
   const { createApp, ref } = Vue
   createApp({
     components: {
-      'GameScreen': Vue.defineAsyncComponent( () => loadModule('./GameScreen.vue', options) )
+      'GameScreen': Vue.defineAsyncComponent( () => loadModule('./view/GameScreen.vue', options) )
     },
     setup() {
       const game = ref(new Game())
