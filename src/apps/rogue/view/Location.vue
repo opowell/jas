@@ -40,7 +40,7 @@ export default {
       if (location.item && location.visible) {
         switch (location.item.type) {
           case 'stick':
-            return '&#x03B6;'
+            return '&#x03C4;'
           case 'scroll':
             return '&#x266A;'
           case 'potion':
