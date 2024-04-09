@@ -50,7 +50,7 @@ export default {
           case 'ring':
             return '&#x25CB;'
           case 'gold':
-            return '&#x273D;'
+            return '&#x263C;'
           case 'staircase':
             return '&#x2630;'
         }

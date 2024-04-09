@@ -1,12 +1,30 @@
 <template>
   <div class="game-screen" @keydown="handleKeydown" tabindex="0" ref="screen">
-    <GameMessage :message="message" :show-more="game.messages.length > 1"/>
-    <div class="map">
-      <GameLocation
-        v-for="location in visibleLocations"
-        :key="location.x + '-' + location.y"
-        :location="location"
-      />
+    <div class="column1">
+      <div v-if="player" class="section">
+        <div class="section-title">Player</div>
+        <div v-for="item in characterItems" class="section-row" :key="item.label">
+          <div class="section-row-label">{{ item.label }}</div>
+          <div class="section-row-value">{{ item.value }}</div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">Inventory</div>
+        <div class="section-row" v-for="(item, index) in game.player.items" :key="index">
+          <div class="section-row-label">{{ item.type }}</div>
+          <div class="section-row-value">1</div>
+        </div>
+      </div>
+    </div>
+    <div class="column2">
+      <GameMessage :message="message" :show-more="game.messages.length > 1"/>
+      <div class="map">
+        <GameLocation
+          v-for="location in visibleLocations"
+          :key="location.x + '-' + location.y"
+          :location="location"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -27,6 +45,39 @@ export default {
     game: { type: Object, required: true }
   },
   computed: {
+    player() {
+      return this.game?.player
+    },
+    characterItems() {
+      const player = this.player
+      if (!player) return []
+      return [
+        {
+          label: 'Level',
+          value: this.game.level
+        },
+        {
+          label: 'Hits',
+          value: player.hits.current + '(' + player.hits.maximum + ')'
+        },
+        {
+          label: 'Strength',
+          value: player.strength.current + '(' + player.strength.maximum + ')'
+        },
+        {
+          label: 'Gold',
+          value: player.gold
+        },
+        {
+          label: 'Armor',
+          value: player.armor
+        },
+        {
+          label: 'Exp',
+          value: player.level + '/' + player.experience
+        }  
+      ]
+    },
     message() {
       if (this.game.messages.length > 0) {
         return this.game.messages[0]
@@ -112,9 +163,34 @@ export default {
 }
 </script>
 <style scoped>
+.section-title {
+  color: #555;
+}
+.section-row {
+  display: flex;
+  color: lightgray;
+}
+.section-row-label {
+  flex: 1 1 auto;
+}
+.section-row-value {
+  flex: 0 0 auto;
+}
+.column1 {
+  flex: 0 0 150px;
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+.column2 {
+  flex: 1 1 auto;
+}
 .game-screen {
   background-color: black;
   font-family: IBMVGA8;
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
 }
 @font-face {
   font-family: "IBMVGA8";

@@ -8,7 +8,7 @@
 export default {
   name: 'Message',
   props: {
-    message: { type: Array, default: null },
+    message: { type: String, default: null },
     showMore: { type: Boolean, default: false }
   }
 }

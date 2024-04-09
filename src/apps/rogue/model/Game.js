@@ -8,21 +8,13 @@ function isDiagonalMove(a, b) {
 }
 
 function isWall(location) {
-  return location.type?.includes('Wall')
+  return location.type.includes('Wall')
 }
 
 function isCrossingThreshhold(from, to) {
-  if (isDoor(from) && isFloor(to)) return true
-  if (isDoor(from) && isHallway(to)) return true
+  if (isDoor(from) && to.isFloor.value) return true
+  if (isDoor(from) && to.isHallway.value) return true
   return false
-}
-
-function isFloor(location) {
-  return location.type === 'floor'
-}
-
-function isHallway(location) {
-  return location.type === 'hallway'
 }
 
 function isDoor(location) {
@@ -72,6 +64,7 @@ class Game {
     this.createStaircase()
     this.createGold(26, 19, 500)
     this.messages = ['Welcome to the Dungeons of Doom']
+    this.level = 1
   }
   clearCurrentMessage() {
     this.messages.splice(0, 1)
@@ -140,10 +133,10 @@ class Game {
           const xhat = randomInt(x1 + 1, x2 - 1)
           for (let x = x1; x <= x2; x++) {
             const y = x < xhat ? y1 : y2
-            this.locations[x][y].type = 'hallway'
+            this.locations[x][y].setType('hallway')
           }
           for (let y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
-            this.locations[xhat][y].type = 'hallway'
+            this.locations[xhat][y].setType('hallway')
           }
         }
         if (j < 2) {
@@ -161,10 +154,10 @@ class Game {
     const yhat = randomInt(y1 + 1, y2 - 1)
     for (let y = y1; y <= y2; y++) {
       const x = y < yhat ? x1 : x2
-      this.locations[x][y].type = 'hallway'
+      this.locations[x][y].setType('hallway')
     }
     for (let x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
-      this.locations[x][yhat].type = 'hallway'
+      this.locations[x][yhat].setType('hallway')
     }
   }
   addDoors() {
@@ -199,13 +192,13 @@ class Game {
     h = h - 1
     const room = new Room(x, y, w, h)
     room.lit = Math.random() > 0.5
-    this.locations[x][y].type = 'downRightWall'
-    this.locations[x + w][y].type = 'downLeftWall'
-    this.locations[x][y + h].type = 'upRightWall'
-    this.locations[x + w][y + h].type = 'upLeftWall'
+    this.locations[x][y].setType('downRightWall')
+    this.locations[x + w][y].setType('downLeftWall')
+    this.locations[x][y + h].setType('upRightWall')
+    this.locations[x + w][y + h].setType('upLeftWall')
     for (let i = x + 1; i < x + w; i++) {
-      this.locations[i][y].type = 'horizontalWall'
-      this.locations[i][y+h].type = 'horizontalWall'
+      this.locations[i][y].setType('horizontalWall')
+      this.locations[i][y+h].setType('horizontalWall')
     }
     for (let i = x; i <= x + w; i++) {
       for (let j = y; j <= y + h; j++) {
@@ -215,18 +208,19 @@ class Game {
     }
     for (let i = x+1; i < x + w; i++) {
       for (let j = y+1; j < y + h; j++) {
-        this.locations[i][j].type = 'floor'
+        this.locations[i][j].setType('floor')
       }
     }
     for (let i = y + 1; i < y + h; i++) {
-      this.locations[x][i].type = 'verticalWall'
-      this.locations[x+w][i].type = 'verticalWall'
+      this.locations[x][i].setType('verticalWall')
+      this.locations[x+w][i].setType('verticalWall')
     }
     this.createScroll(x + 1, y + 1)
     this.createRing(x + 2, y + 1)
     this.createPotion(x + 1, y + 2)
     this.createWeapon(x + 2, y + 2)
     this.createStick(x + 3, y + 2)
+    this.createGold(x + 2, y + 3, 200)
     return room
   }
   hasWallBetween(a, b) {
@@ -261,7 +255,7 @@ class Game {
     item.type = 'gold'
   }
   createStaircase() {
-    const locations = this.locations.flat().filter(location => !location.item && location.type === 'floor')
+    const locations = this.locations.flat().filter(location => !location.item.value && location.isFloor.value)
     const location = randomElement(locations)
     const item = this.createItem(location.x, location.y)
     item.type = 'staircase'
@@ -269,10 +263,10 @@ class Game {
   createItem(x, y) {
     const object = new GameObject()
     const location = this.locations[x][y]
-    if (isWall(location) || isDoor(location) || !!location.item) {
+    if (!location.canPlaceItem) {
       return object
     }
-    location.item = object
+    location.setItem(object)
     object.location = location
     return object
   }
@@ -287,7 +281,7 @@ class Game {
     this.messages.push(message)
   }
   createPlayer() {
-    const locations = this.locations.flat().filter(location => !location.character && location.type === 'floor')
+    const locations = this.locations.flat().filter(location => !location.character && location.isFloor.value)
     const location = randomElement(locations)
     const x = location.x
     const y = location.y
@@ -380,9 +374,9 @@ class Game {
         })
       }
     }
-    if (isFloor(location) || (possibleLocations.length === 1 && isHallway(location))) {
+    if (location.isFloor || (possibleLocations.length === 1 && location.isHallway)) {
       let destination = possibleLocations.find(loc => loc.moveDir === prefDir)
-      if (!destination && possibleLocations.length === 1 && isHallway(location)) {
+      if (!destination && possibleLocations.length === 1 && location.isHallway) {
         destination = possibleLocations[0]
       }
       if (destination) {
@@ -446,7 +440,7 @@ class Game {
     for (let i = Math.max(x - 1, 0); i < Math.min(x + 2, this.width); i++) {
       for (let j = Math.max(y - 1, 0); j < Math.min(y + 2, this.height); j++) {
         const location = this.locations[i][j]
-        if (location.type === 'floor') {
+        if (location.isFloor) {
           if (!location.item || to.room !== from.room) {
             location.visible = location.room.lit
           }
@@ -467,7 +461,7 @@ class Game {
     this.player.moveTo(to)
     if (from.room !== to.room) {
       if (from.room) {
-        from.room.locations.filter(location => location.type === 'floor').forEach(location => location.visible = false)
+        from.room.locations.filter(location => location.isFloor).forEach(location => location.visible = false)
       }
       if (to.room && to.room.lit) {
         to.room.locations.forEach(location => {
