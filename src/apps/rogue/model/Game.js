@@ -22,6 +22,7 @@ function isDoor(location) {
 }
 
 function canMoveTo(location) {
+  if (!location.type) return false
   return ['floor', 'hallway', 'door'].includes(location.type)
 }
 
@@ -429,7 +430,6 @@ class Game {
     this.movePlayer(location, this.locations[location.x+1][location.y+1])
   }
   movePlayer(from, to) {
-    if (isWall(to)) return
     if (!canMoveTo(to)) return
     if (isDiagonalMove(from, to) && this.hasWallBetween(from, to)) {
       return

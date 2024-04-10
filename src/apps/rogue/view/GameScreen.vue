@@ -11,7 +11,7 @@
       <div class="section">
         <div class="section-title">Inventory</div>
         <div class="section-row" v-for="(item, index) in game.player.items" :key="index">
-          <div class="section-row-label">{{ item.type }}</div>
+          <div class="section-row-label">{{ alphabet[index] + ') ' + item.type }}</div>
           <div class="section-row-value">1</div>
         </div>
       </div>
@@ -43,6 +43,11 @@ export default {
   },
   props: {
     game: { type: Object, required: true }
+  },
+  data() {
+    return {
+      alphabet: 'abcdefghijklmnopqrstuvwxyz'
+    }
   },
   computed: {
     player() {
