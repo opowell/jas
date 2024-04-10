@@ -62,7 +62,6 @@ class Game {
     this.addRooms()
     this.player = this.createPlayer()
     this.createStaircase()
-    this.createGold(26, 19, 500)
     this.messages = ['Welcome to the Dungeons of Doom']
     this.level = 1
   }
@@ -263,7 +262,7 @@ class Game {
   createItem(x, y) {
     const object = new GameObject()
     const location = this.locations[x][y]
-    if (!location.canPlaceItem) {
+    if (!location.canPlaceItem.value) {
       return object
     }
     location.setItem(object)
