@@ -265,7 +265,7 @@ class Game {
     item.amount = amount
   }
   createStaircase() {
-    const locations = this.locations.flat().filter(location => !location.item && location.isFloor.value)
+    const locations = this.locations.flat().filter(location => !location.item && (location.isFloor === true || location.isFloor.value === true))
     const location = randomElement(locations)
     const item = this.createItem(location.x, location.y)
     item.type = 'staircase'
@@ -295,7 +295,8 @@ class Game {
       this.player = new Character(this)
     }
     const player = this.player
-    const locations = this.locations.flat().filter(location => !location.state.character && location.isFloor.value)
+    const locations = this.locations.flat().filter(location => !location.state.character && (location.isFloor === true || location.isFloor?.value === true))
+    console.log(player, locations)
     const location = randomElement(locations)
     player.location = location
     location.character = player
