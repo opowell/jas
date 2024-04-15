@@ -22,6 +22,19 @@ export default {
       locationHeight: LOCATION.HEIGHT + 'px'
     }
   },
+  computed: {
+    isVisible() {
+      const location = this.location
+      return location.visible ||
+        (
+          location.mapped &&
+          (
+            location.room?.lit ||
+            location.item?.type === 'staircase'
+          )
+        )
+    }
+  },
   methods: {
     locationClasses(location) {
       const classes = {}
@@ -31,6 +44,9 @@ export default {
       return classes
     },
     locationContent(location) {
+      if (!this.isVisible) {
+        return ''
+      }
       if (location.character) {
         return '&#x263A;'
       }
@@ -79,6 +95,9 @@ export default {
       }
     },
     getBackgroundColor(location) {
+      if (!this.isVisible) {
+        return 'black'
+      }
       if (location.character) {
         if (location.type === 'hallway') {
           return '#b3b3b3'
