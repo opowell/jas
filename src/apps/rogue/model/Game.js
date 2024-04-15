@@ -12,8 +12,8 @@ function isWall(location) {
 }
 
 function isCrossingThreshhold(from, to) {
-  if (isDoor(from) && to.isFloor.value) return true
-  if (isDoor(from) && to.isHallway.value) return true
+  if (isDoor(from) && to.isFloor) return true
+  if (isDoor(from) && to.isHallway) return true
   return false
 }
 
@@ -55,21 +55,30 @@ class Game {
   constructor() {
     this.width = WIDTH
     this.height = HEIGHT
-    this.locations = []
+    this.level = 1
+    this.createLocations()
+    this.startNewLevel()
+    this.messages = ['Welcome to the Dungeons of Doom']
+  }
+  startNewLevel() {
     this.objects = []
     this.items = []
     this.characters = []
-    this.createLocations()
+    this.clearLocations()
     this.addRooms()
-    this.player = this.createPlayer()
+    this.createPlayer()
     this.createStaircase()
-    this.messages = ['Welcome to the Dungeons of Doom']
-    this.level = 1
   }
   clearCurrentMessage() {
     this.messages.splice(0, 1)
   }
+  clearLocations() {
+    this.locations.forEach(row => row.forEach(location => {
+      location.reset()
+    }))
+  }
   createLocations() {
+    this.locations = []
     for (let i = 0; i < this.width; i++) {
       const col = []
       this.locations.push(col)
@@ -191,7 +200,7 @@ class Game {
     w = w - 1
     h = h - 1
     const room = new Room(x, y, w, h)
-    room.lit = Math.random() > 0.5
+    room.lit = Math.random() > 0.05
     this.locations[x][y].setType('downRightWall')
     this.locations[x + w][y].setType('downLeftWall')
     this.locations[x][y + h].setType('upRightWall')
@@ -220,7 +229,7 @@ class Game {
     this.createPotion(x + 1, y + 2)
     this.createWeapon(x + 2, y + 2)
     this.createStick(x + 3, y + 2)
-    this.createGold(x + 2, y + 3, 200)
+    this.createGold(x + 2, y + 3, randomInt(1, 400))
     return room
   }
   hasWallBetween(a, b) {
@@ -253,9 +262,10 @@ class Game {
   createGold(x, y, amount) {
     const item = this.createItem(x, y)
     item.type = 'gold'
+    item.amount = amount
   }
   createStaircase() {
-    const locations = this.locations.flat().filter(location => !location.item.value && location.isFloor.value)
+    const locations = this.locations.flat().filter(location => !location.item && location.isFloor.value)
     const location = randomElement(locations)
     const item = this.createItem(location.x, location.y)
     item.type = 'staircase'
@@ -281,11 +291,16 @@ class Game {
     this.messages.push(message)
   }
   createPlayer() {
-    const locations = this.locations.flat().filter(location => !location.character && location.isFloor.value)
+    if (!this.player) {
+      this.player = new Character(this)
+    }
+    const player = this.player
+    const locations = this.locations.flat().filter(location => !location.state.character && location.isFloor.value)
     const location = randomElement(locations)
+    player.location = location
+    location.character = player
     const x = location.x
     const y = location.y
-    const object = this.createCharacter(x, y)
     for (let i = x - 1; i < x + 2; i++) {
       for (let j = y - 1; j < y + 2; j++) {
         this.locations[i][j].visible = true
@@ -298,14 +313,12 @@ class Game {
         r.seen = true
       })
     }
-    return object
   }
   canMoveTo(location) {
     return !isWall(location)
   }
   runUp() {
     const location = this.player.location
-    if (location.y === 0) return
     if (!canMoveTo(this.locations[location.x][location.y-1])) return
     this.movePlayer(location, this.locations[location.x][location.y - 1])
     this.runExcept('down', 'up')
@@ -384,6 +397,12 @@ class Game {
         this.runExcept(destination.cameFrom, destination.moveDir)
       }
     }
+  }
+  goDownStairs() {
+    const location = this.player.location
+    if (location.item?.type !== 'staircase') return
+    this.level++
+    this.startNewLevel()
   }
   moveUp() {
     const location = this.player.location

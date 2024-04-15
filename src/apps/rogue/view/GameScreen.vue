@@ -93,16 +93,17 @@ export default {
       return this.game.locations.flat()
     },
     visibleLocations() {
-      return this.locations.filter(location => {
-        return location.visible ||
-          (
-            location.mapped &&
-            (
-              location.room?.lit ||
-              location.item?.type === 'staircase'
-            )
-          )
-      })
+      return this.locations
+      // return this.locations.filter(location => {
+      //   return location.visible ||
+      //     (
+      //       location.mapped &&
+      //       (
+      //         location.room?.lit ||
+      //         location.item?.type === 'staircase'
+      //       )
+      //     )
+      // })
     },
     screenWidth() {
       return this.game.width * LOCATION.WIDTH + 'px'
@@ -123,6 +124,9 @@ export default {
         this.game.clearCurrentMessage()
       }
       switch (event.key) {
+        case ':':
+          this.game.goDownStairs()
+          break
         case ' ':
           this.game.clearCurrentMessage()
           break
