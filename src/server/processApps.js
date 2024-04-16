@@ -14,7 +14,7 @@ const processApps = (app, appsPath) => {
     let appFolder = path.join(appsPath, dir)
     let clientFolder = appFolder
     const clientSubfolder = path.join(clientFolder, 'client')
-    if (fs.lstatSync(clientSubfolder)) {
+    if (fs.existsSync(clientSubfolder)) {
       clientFolder = clientSubfolder
     }
     app.use('/' + dir, express.static(clientFolder))
