@@ -59,6 +59,7 @@ window.launchpad.init = () => {
       }
     }).mount('#app')  
   })
+  const socket = io()
 }
 
 window.launchpad.init()

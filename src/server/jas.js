@@ -1,9 +1,16 @@
 import express from 'express'
 import path from 'path'
 import { getApps, processApps } from './processApps.js'
+import { Server } from 'socket.io'
+import { createServer } from 'node:http';
 
 const app = express()
 const port = 3000
+const httpServer = createServer(app);
+const io = new Server(httpServer);
+io.on('connection', (socket) => {
+  console.log('a user connected');
+})
 
 let serverPath = undefined
 if (process.argv[0].indexOf('node') > -1) {
@@ -19,6 +26,6 @@ app.get('/apps', (req, res) => {
   res.json(getApps(appsPath))
 })
 
-app.listen(port, () => {
+httpServer.listen(port, () => {
   console.log(`JAS - http://127.0.0.1:${port}`)
 })
