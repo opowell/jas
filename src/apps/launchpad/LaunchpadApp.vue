@@ -14,12 +14,15 @@ function djb2(str) {
 }
 
 function hashStringToColor(str) {
-  var hash = djb2(str)
-  var g = (hash & 0xFF0000) >> 16
-  var b = (hash & 0x00FF00) >> 8
-  var r = hash & 0x0000FF
+  const hash = djb2(str)
+  const g = (hash & 0xFF0000) >> 16
+  const b = (hash & 0x00FF00) >> 8
+  const r = hash & 0x0000FF
   return "#" + ("0" + r.toString(16)).substr(-2) + ("0" + g.toString(16)).substr(-2) + ("0" + b.toString(16)).substr(-2)
 }
+
+const inv = (hex) => '#' + hex.match(/[a-f0-9]{2}/ig).map(e => (255 - parseInt(e, 16) | 0).toString(16).replace(/^([a-f0-9])$/, '0$1')).join('')
+
 export default {
   name: 'LaunchpadApp',
   props: {
@@ -28,6 +31,12 @@ export default {
   computed: {
     bgColor() {
       return hashStringToColor(this.app)
+    },
+    color() {
+      if (!this.bgColor) {
+        return 'black'
+      }
+      return inv(this.bgColor)
     },
     fadedBgColor() {
       return this.bgColor + '4d'
@@ -49,6 +58,7 @@ export default {
   cursor: pointer;
 }
 .app-icon {
+  color: v-bind(color);
   background-color: v-bind(bgColor);
   height: 9rem;
   display: flex;
