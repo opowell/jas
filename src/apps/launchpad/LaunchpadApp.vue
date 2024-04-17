@@ -58,7 +58,7 @@ export default {
   cursor: pointer;
 }
 .app-icon {
-  color: v-bind(color);
+  color: #fff;
   background-color: v-bind(bgColor);
   height: 9rem;
   display: flex;
