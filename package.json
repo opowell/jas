@@ -2,5 +2,8 @@
   "name": "jtray",
   "version": "1.0.0",
   "author": "opowell <opowell@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "ip": "^2.0.1"
+  }
 }

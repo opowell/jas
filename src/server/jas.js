@@ -2,7 +2,9 @@ import express from 'express'
 import path from 'path'
 import { getApps, processApps } from './processApps.js'
 import { Server } from 'socket.io'
-import { createServer } from 'node:http';
+import { createServer } from 'node:http'
+import { writeFileSync } from 'fs'
+import ip from 'ip'
 
 const app = express()
 const port = 3000
@@ -26,6 +28,14 @@ app.get('/apps', (req, res) => {
   res.json(getApps(appsPath))
 })
 
+const url = ip.address()
+const settings = {
+  url: ip.address(),
+  port
+}
+const settingsPath = path.join(serverPath, '/server/generated/settings.json')
+writeFileSync(settingsPath, JSON.stringify(settings, null, 2), 'utf8')
+
 httpServer.listen(port, () => {
-  console.log(`JAS - http://127.0.0.1:${port}`)
+  console.log(`JAS - http://${url}:${port}`)
 })
