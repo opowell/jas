@@ -3,16 +3,8 @@ import path from 'path'
 import { getApps, processApps } from './processApps.js'
 import { Server } from 'socket.io'
 import { createServer } from 'node:http'
-import { writeFileSync } from 'fs'
+import { readFileSync, writeFileSync } from 'fs'
 import ip from 'ip'
-
-const app = express()
-const port = 3000
-const httpServer = createServer(app);
-const io = new Server(httpServer);
-io.on('connection', (socket) => {
-  console.log('a user connected');
-})
 
 let serverPath = undefined
 if (process.argv[0].indexOf('node') > -1) {
@@ -20,13 +12,33 @@ if (process.argv[0].indexOf('node') > -1) {
 } else {
   serverPath         = path.dirname(process.execPath)
 }
+const importedSettingsPath = path.join(serverPath, '/server/settings.json')
+const importedSettings = JSON.parse(readFileSync(importedSettingsPath, 'utf8'))
+
+const expressApp = express()
+const port = 3000
+const httpServer = createServer(expressApp)
+const io = new Server(httpServer)
+io.on('connection', (socket) => {
+  socket.on('startApp', (id) => {
+    io.emit('startAppFromServer', id)
+  })
+})
+
+function handleRequest(req, res) {
+  res.sendFile(path.join(serverPath, 'apps/' + importedSettings.defaultApp + '/index.html'))
+}
+expressApp.use('/', express.static('apps/' + importedSettings.defaultApp))
+console.log(path.join(serverPath, '../static'))
+expressApp.use('/static', express.static(path.join(serverPath, '../static')))
 
 const appsPath = path.join(serverPath, 'apps')
-processApps(app, appsPath)
+processApps(expressApp, appsPath)
 
-app.get('/apps', (req, res) => {
+expressApp.get('/apps', (req, res) => {
   res.json(getApps(appsPath))
 })
+expressApp.get('/:id', handleRequest)
 
 const url = ip.address()
 const settings = {
