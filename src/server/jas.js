@@ -1,17 +1,13 @@
 import express from 'express'
 import path from 'path'
 import { getApps, processApps } from './processApps.js'
+import { getServerPath } from './getServerPath.js'
 import { Server } from 'socket.io'
 import { createServer } from 'node:http'
 import { readFileSync, writeFileSync } from 'fs'
 import ip from 'ip'
 
-let serverPath = undefined
-if (process.argv[0].indexOf('node') > -1) {
-  serverPath         = process.cwd()
-} else {
-  serverPath         = path.dirname(process.execPath)
-}
+const serverPath = getServerPath()
 const importedSettingsPath = path.join(serverPath, '/server/settings.json')
 const importedSettings = JSON.parse(readFileSync(importedSettingsPath, 'utf8'))
 
