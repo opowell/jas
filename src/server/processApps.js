@@ -8,7 +8,7 @@ const getApps = (appsPath) => {
   return fs.readdirSync(appsPath).filter(isFolder)
 }
 
-const processApps = (app, appsPath) => {
+const processApps = (expressApp, appsPath) => {
   const apps = getApps(appsPath)
   apps.forEach(dir => {
     let appFolder = path.join(appsPath, dir)
@@ -17,8 +17,11 @@ const processApps = (app, appsPath) => {
     if (fs.existsSync(clientSubfolder)) {
       clientFolder = clientSubfolder
     }
-    app.use('/' + dir, express.static(clientFolder))
-    app.get('/' + dir, (req, res) => {
+    expressApp.use('/' + dir, express.static(clientFolder))
+    expressApp.get('/' + dir, (req, res) => {
+      res.sendFile(path.join(clientFolder, 'index.html'))
+    })
+    expressApp.get('/' + dir + '/:id', (req, res) => {
       res.sendFile(path.join(clientFolder, 'index.html'))
     })
   })
