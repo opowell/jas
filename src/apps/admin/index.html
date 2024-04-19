@@ -7,6 +7,7 @@
   </head>
   <body>
     <div id="app">
+      <h1>ADMIN</h1>
       <div class="apps-container">
         <div class="apps">
           <launchpad-app v-for="app in apps" :key="app" :app="app" @click="handleAppClick(app)" />
