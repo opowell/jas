@@ -11,10 +11,10 @@ const getApps = (appsPath) => {
 const processApps = (expressApp, appsPath) => {
   const apps = getApps(appsPath)
   apps.forEach(dir => {
-    let appFolder = path.join(appsPath, dir)
+    const appFolder = path.join(appsPath, dir)
     expressApp.use('/' + dir, express.static(appFolder))
     expressApp.get('/' + dir, (req, res) => {
-      res.sendFile(path.join(clientFolder, 'index.html'))
+      res.sendFile(path.join(appFolder, 'index.html'))
     })
   })
 }
