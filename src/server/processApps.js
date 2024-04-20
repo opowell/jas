@@ -12,16 +12,8 @@ const processApps = (expressApp, appsPath) => {
   const apps = getApps(appsPath)
   apps.forEach(dir => {
     let appFolder = path.join(appsPath, dir)
-    let clientFolder = appFolder
-    const clientSubfolder = path.join(clientFolder, 'client')
-    if (fs.existsSync(clientSubfolder)) {
-      clientFolder = clientSubfolder
-    }
-    expressApp.use('/' + dir, express.static(clientFolder))
+    expressApp.use('/' + dir, express.static(appFolder))
     expressApp.get('/' + dir, (req, res) => {
-      res.sendFile(path.join(clientFolder, 'index.html'))
-    })
-    expressApp.get('/' + dir + '/:id', (req, res) => {
       res.sendFile(path.join(clientFolder, 'index.html'))
     })
   })

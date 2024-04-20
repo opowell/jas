@@ -203,8 +203,12 @@ export default {
 }
 @font-face {
   font-family: "IBMVGA8";
-  src: url("Web437_IBM_VGA_8x14.woff") format('woff');
-  /* src: url("WebPlus_IBM_BIOS.woff") format('woff'); */
+  /* src: url("WebPlus_IBM_VGA_9x16.woff") format('woff'); */
+  /* src: url("WebPlus_IBM_VGA_9x14.woff") format('woff'); */
+  /* src: url("WebPlus_IBM_VGA_8x14.woff") format('woff'); */
+  /* src: url("Web437_IBM_VGA_8x14.woff") format('woff'); */
+  /* src: url("Web437_IBM_VGA_9x14.woff") format('woff'); */
+  src: url("Web437_IBM_VGA_9x16.woff") format('woff');
 }
 .map {
   width: v-bind(screenWidth);
