@@ -5,8 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.19.1",
-    "path": "^0.12.7",
-    "socket.io": "^4.7.5"
+    "ip": "^2.0.1",
+    "path": "^0.12.7"
   },
   "type": "module"
 }
