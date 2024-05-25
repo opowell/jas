@@ -193,6 +193,8 @@ export default {
 }
 .column2 {
   flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
 }
 .game-screen {
   background-color: black;

@@ -2,7 +2,7 @@ import Location from './Location.js'
 import GameObject from './GameObject.js'
 import Room from './Room.js'
 import Character from './Character.js'
-
+import { spawnWeapon } from './WeaponFactory.js'
 function isDiagonalMove(a, b) {
   return Math.abs(Math.abs(a.x - b.x) - Math.abs(a.y - b.y)) === 0
 }
@@ -27,7 +27,9 @@ function canMoveTo(location) {
 }
 
 const WIDTH = 60
-const HEIGHT = 30
+const HEIGHT = 20
+const NUM_ROOM_COLS = 3
+const NUM_ROOM_ROWS = 2
 
 /**
  * 
@@ -91,13 +93,13 @@ class Game {
     this.rooms = []
     const minWidth = 4
     const minHeight = 4
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < NUM_ROOM_COLS; i++) {
       this.rooms.push([])
-      const minX = i * WIDTH / 3
-      const maxX = minX + WIDTH / 3 - 1 - (i < 2 ? 1 : 0)
-      for (let j = 0; j < 3; j++) {
-        const minY = j * HEIGHT / 3
-        const maxY = minY + HEIGHT / 3 - 1 - (j < 2 ? 1 : 0)
+      const minX = i * 20
+      const maxX = minX + 20 - 1 - (i < 2 ? 1 : 0)
+      for (let j = 0; j < NUM_ROOM_ROWS; j++) {
+        const minY = j * 10
+        const maxY = minY + 10 - 1 - (j < 2 ? 1 : 0)
         let x = randomInt(minX, maxX)
         let y = randomInt(minY, maxY)
         let goRight = Math.random() > 0.5
@@ -130,10 +132,10 @@ class Game {
     this.addHallways()
   }
   addHallways() {
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
+    for (let i = 0; i < NUM_ROOM_COLS; i++) {
+      for (let j = 0; j < NUM_ROOM_ROWS; j++) {
         const room = this.rooms[i][j]
-        if (i < 2) {
+        if (i < NUM_ROOM_COLS - 1) {
           const rightRoom = this.rooms[i + 1][j]
           const y1 = room.rightDoor.y
           const y2 = rightRoom.leftDoor.y
@@ -148,7 +150,7 @@ class Game {
             this.locations[xhat][y].setType('hallway')
           }
         }
-        if (j < 2) {
+        if (j < NUM_ROOM_ROWS - 1) {
           const downRoom = this.rooms[i][j + 1]
           this.addVerticalHallway(room, downRoom)
         }
@@ -170,13 +172,13 @@ class Game {
     }
   }
   addDoors() {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < NUM_ROOM_COLS; i++) {
       const left = i > 0
-      const right = i < 2
-      for (let j = 0; j < 3; j++) {
+      const right = i < NUM_ROOM_COLS - 1
+      for (let j = 0; j < NUM_ROOM_ROWS; j++) {
         const room = this.rooms[i][j]
         const up = j > 0
-        const down = j < 2
+        const down = j < NUM_ROOM_ROWS - 1
         if (left) {
           const y = room.y + randomInt(room.height - 2) + 1
           room.setLeftDoor(this.locations[room.x][y])
@@ -252,8 +254,9 @@ class Game {
     item.type = 'ring'
   }
   createWeapon(x, y) {
-    const item = this.createItem(x, y)
+    const item = spawnWeapon()
     item.type = 'weapon'
+    this.placeItem(item, x, y)
   }
   createRing(x, y) {
     const item = this.createItem(x, y)
@@ -272,6 +275,9 @@ class Game {
   }
   createItem(x, y) {
     const object = new GameObject()
+    return this.placeItem(object, x, y)
+  }
+  placeItem(object, x, y) {
     const location = this.locations[x][y]
     if (!location.canPlaceItem.value) {
       return object
@@ -288,6 +294,7 @@ class Game {
     return character
   }
   addMessage(message) {
+    console.log('add message', message, this.messages)
     this.messages.push(message)
   }
   createPlayer() {
@@ -296,7 +303,6 @@ class Game {
     }
     const player = this.player
     const locations = this.locations.flat().filter(location => !location.state.character && (location.isFloor === true || location.isFloor?.value === true))
-    console.log(player, locations)
     const location = randomElement(locations)
     player.location = location
     location.character = player
@@ -394,7 +400,10 @@ class Game {
         destination = possibleLocations[0]
       }
       if (destination) {
-        this.movePlayer(location, destination.location)
+        const movedOntoItem = this.movePlayer(location, destination.location)
+        if (movedOntoItem) {
+          return
+        }
         this.runExcept(destination.cameFrom, destination.moveDir)
       }
     }
@@ -477,7 +486,7 @@ class Game {
     }
     from.character = null
     to.character = this.player
-    this.player.moveTo(to)
+    const movedOntoItem = this.player.moveTo(to)
     if (from.room !== to.room) {
       if (from.room) {
         from.room.locations.filter(location => location.isFloor).forEach(location => location.visible = false)
@@ -490,6 +499,7 @@ class Game {
         })
       }
     }
+    return movedOntoItem
   }
 }
 export default Game

@@ -2,7 +2,7 @@
 import TUWG2DView from './Game/Game.vue'
 import MainMenu from './MainMenu.vue'
 
-import { ref } from 'vue'
+const { ref } = Vue
 import { GameFactory } from '../../../model/GameFactory'
 import { useStore } from '../store/pinia'
 
