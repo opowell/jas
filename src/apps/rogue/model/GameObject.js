@@ -3,5 +3,10 @@ class GameObject {
     this.location = null
     this.type = null
   }
+  toJson() {
+    return {
+      type: this.type
+    }
+  }
 }
 export default GameObject
