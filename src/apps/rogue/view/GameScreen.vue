@@ -114,12 +114,14 @@ export default {
   },
   mounted() {
     this.$refs.screen.focus()
+    this.storeGameState()
   },
   methods: {
     handleKeydown(event) {
       if (this.game.messages.length > 1 && event.key !== ' ') {
         return
       }
+      this.game.newState()
       if (this.game.messages.length === 1) {
         this.game.clearCurrentMessage()
       }
@@ -167,6 +169,9 @@ export default {
           this.game.moveDownRight()
           break
       }
+    },
+    storeGameState() {
+      window.localStorage.setItem('gameState', JSON.stringify(this.game.toJson()))
     }
   }
 }
