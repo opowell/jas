@@ -27,7 +27,7 @@ function canMoveTo(location) {
 }
 
 const WIDTH = 60
-const HEIGHT = 20
+const HEIGHT = 30
 const NUM_ROOM_COLS = 3
 const NUM_ROOM_ROWS = 2
 
@@ -314,7 +314,7 @@ class Game {
       this.player = new Character(this)
     }
     const player = this.player
-    const locations = this.state.locations.flat().filter(location => !location.state.character && (location.isFloor === true || location.isFloor?.value === true))
+    const locations = this.state.locations.flat().filter(location => location.canPlacePlayer === true || location.canPlacePlayer?.value === true)
     const location = randomElement(locations)
     player.location = location
     location.character = player
