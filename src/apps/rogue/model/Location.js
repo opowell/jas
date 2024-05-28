@@ -23,6 +23,11 @@ class Location {
       if (!!this.state.item) return false
       return true
     })
+    this.canPlaceStairs = computed(() => {
+      if (!this.isFloor.value) return false
+      if (!!this.state.item) return false
+      return true
+    })
   }
   get x() {
     return this.state.x
@@ -73,7 +78,6 @@ class Location {
     this.state.item = item
   }
   reset() {
-    console.log('reset', this.state.x, this.state.y)
     this.state.objects = []
     this.state.visible = false
     this.state.seen = false

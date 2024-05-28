@@ -278,8 +278,11 @@ class Game {
     item.amount = amount
   }
   createStaircase() {
-    const locations = this.state.locations.flat().filter(location => !location.item && (location.isFloor === true || location.isFloor.value === true))
+    const locations = this.state.locations.flat().filter(location => location.canPlaceStairs === true || location.canPlaceStairs.value)
     const location = randomElement(locations)
+    if (!location) {
+      console.log('ERROR - could not place staircase', location, locations, this.state.locations.flat())
+    }
     const item = this.createItem(location.x, location.y)
     item.type = 'staircase'
   }
@@ -289,7 +292,7 @@ class Game {
   }
   placeItem(object, x, y) {
     const location = this.state.locations[x][y]
-    if (!location.canPlaceItem.value) {
+    if (location.canPlaceItem === false || location.canPlaceItem.value === false) {
       return object
     }
     location.setItem(object)
@@ -304,7 +307,6 @@ class Game {
     return character
   }
   addMessage(message) {
-    console.log('add message', message, this.messages)
     this.messages.push(message)
   }
   createPlayer() {
