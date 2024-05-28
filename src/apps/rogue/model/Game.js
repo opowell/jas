@@ -3,7 +3,6 @@ import GameObject from './GameObject.js'
 import Room from './Room.js'
 import Character from './Character.js'
 import { spawnWeapon } from './WeaponFactory.js'
-import * as GameState from './state/Game.js'
 function isDiagonalMove(a, b) {
   return Math.abs(Math.abs(a.x - b.x) - Math.abs(a.y - b.y)) === 0
 }
@@ -62,27 +61,6 @@ class Game {
     this.createLocations()
     this.startNewLevel()
     this.messages = ['Welcome to the Dungeons of Doom']
-
-    const initialState = new GameState.default({
-      width: WIDTH,
-      height: HEIGHT,
-      level: 1,
-      messages: this.messages,
-      locations: this.locations,
-      rooms: this.rooms,
-      player: {
-        location: 1,
-        type: 'player',
-        items: [],
-        strength: {},
-        hits: {}
-      }
-    })
-    this.states = [initialState]
-    this.activeState = initialState
-  }
-  toJson() {
-    return this.states.map(state => state.toJson())
   }
   startNewLevel() {
     this.objects = []
@@ -316,6 +294,7 @@ class Game {
     return character
   }
   addMessage(message) {
+    console.log('add message', message, this.messages)
     this.messages.push(message)
   }
   createPlayer() {
@@ -434,11 +413,6 @@ class Game {
     if (location.item?.type !== 'staircase') return
     this.level++
     this.startNewLevel()
-  }
-  newState() {
-    const copy = new GameState.default(this.activeState.toJson())
-    this.states.push(copy)
-    this.activeState = copy
   }
   moveUp() {
     const location = this.player.location
