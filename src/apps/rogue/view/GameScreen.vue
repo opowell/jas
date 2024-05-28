@@ -18,7 +18,7 @@
     </div>
     <div class="column2">
       <GameMessage :message="message" :show-more="game.messages.length > 1"/>
-      <div class="map">
+      <div v-if="showMap" class="map">
         <GameLocation
           v-for="location in visibleLocations"
           :key="location.x + '-' + location.y"
@@ -46,7 +46,8 @@ export default {
   },
   data() {
     return {
-      alphabet: 'abcdefghijklmnopqrstuvwxyz'
+      alphabet: 'abcdefghijklmnopqrstuvwxyz',
+      showMap: true
     }
   },
   computed: {

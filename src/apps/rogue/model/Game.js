@@ -55,12 +55,22 @@ const randomElement = (array) => {
 
 class Game {
   constructor() {
+    this.state = {
+      locations: [],
+      rooms: []
+    }
     this.width = WIDTH
     this.height = HEIGHT
     this.level = 1
     this.createLocations()
     this.startNewLevel()
     this.messages = ['Welcome to the Dungeons of Doom']
+  }
+  get rooms() {
+    return this.state.rooms
+  }
+  get locations() {
+    return this.state.locations
   }
   startNewLevel() {
     this.objects = []
@@ -75,26 +85,26 @@ class Game {
     this.messages.splice(0, 1)
   }
   clearLocations() {
-    this.locations.forEach(row => row.forEach(location => {
+    this.state.locations.forEach(row => row.forEach(location => {
       location.reset()
     }))
   }
   createLocations() {
-    this.locations = []
+    this.state.locations = []
     for (let i = 0; i < this.width; i++) {
       const col = []
-      this.locations.push(col)
+      this.state.locations.push(col)
       for (let j = 0; j < this.height; j++) {
         col.push(new Location(i, j))
       }
     }
   }
   addRooms() {
-    this.rooms = []
+    this.state.rooms = []
     const minWidth = 4
     const minHeight = 4
     for (let i = 0; i < NUM_ROOM_COLS; i++) {
-      this.rooms.push([])
+      this.state.rooms.push([])
       const minX = i * 20
       const maxX = minX + 20 - 1 - (i < 2 ? 1 : 0)
       for (let j = 0; j < NUM_ROOM_ROWS; j++) {
@@ -125,7 +135,7 @@ class Game {
           y = y - height
         }
         const room = this.addRoom(x, y, width, height)
-        this.rooms[i].push(room)
+        this.state.rooms[i].push(room)
       }
     }
     this.addDoors()
@@ -134,9 +144,9 @@ class Game {
   addHallways() {
     for (let i = 0; i < NUM_ROOM_COLS; i++) {
       for (let j = 0; j < NUM_ROOM_ROWS; j++) {
-        const room = this.rooms[i][j]
+        const room = this.state.rooms[i][j]
         if (i < NUM_ROOM_COLS - 1) {
-          const rightRoom = this.rooms[i + 1][j]
+          const rightRoom = this.state.rooms[i + 1][j]
           const y1 = room.rightDoor.y
           const y2 = rightRoom.leftDoor.y
           const x1 = room.x + room.width + 1
@@ -144,14 +154,14 @@ class Game {
           const xhat = randomInt(x1 + 1, x2 - 1)
           for (let x = x1; x <= x2; x++) {
             const y = x < xhat ? y1 : y2
-            this.locations[x][y].setType('hallway')
+            this.state.locations[x][y].setType('hallway')
           }
           for (let y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
-            this.locations[xhat][y].setType('hallway')
+            this.state.locations[xhat][y].setType('hallway')
           }
         }
         if (j < NUM_ROOM_ROWS - 1) {
-          const downRoom = this.rooms[i][j + 1]
+          const downRoom = this.state.rooms[i][j + 1]
           this.addVerticalHallway(room, downRoom)
         }
       }
@@ -165,10 +175,10 @@ class Game {
     const yhat = randomInt(y1 + 1, y2 - 1)
     for (let y = y1; y <= y2; y++) {
       const x = y < yhat ? x1 : x2
-      this.locations[x][y].setType('hallway')
+      this.state.locations[x][y].setType('hallway')
     }
     for (let x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
-      this.locations[x][yhat].setType('hallway')
+      this.state.locations[x][yhat].setType('hallway')
     }
   }
   addDoors() {
@@ -176,24 +186,24 @@ class Game {
       const left = i > 0
       const right = i < NUM_ROOM_COLS - 1
       for (let j = 0; j < NUM_ROOM_ROWS; j++) {
-        const room = this.rooms[i][j]
+        const room = this.state.rooms[i][j]
         const up = j > 0
         const down = j < NUM_ROOM_ROWS - 1
         if (left) {
           const y = room.y + randomInt(room.height - 2) + 1
-          room.setLeftDoor(this.locations[room.x][y])
+          room.setLeftDoor(this.state.locations[room.x][y])
         }
         if (right) {
           const y = room.y + randomInt(room.height - 2) + 1
-          room.setRightDoor(this.locations[room.x + room.width][y])
+          room.setRightDoor(this.state.locations[room.x + room.width][y])
         }
         if (up) {
           const x = room.x + randomInt(room.width - 2) + 1
-          room.setUpDoor(this.locations[x][room.y])
+          room.setUpDoor(this.state.locations[x][room.y])
         }
         if (down) {
           const x = room.x + randomInt(room.width - 2) + 1
-          room.setDownDoor(this.locations[x][room.y + room.height])
+          room.setDownDoor(this.state.locations[x][room.y + room.height])
         }
       }
     }
@@ -203,28 +213,28 @@ class Game {
     h = h - 1
     const room = new Room(x, y, w, h)
     room.lit = Math.random() > 0.05
-    this.locations[x][y].setType('downRightWall')
-    this.locations[x + w][y].setType('downLeftWall')
-    this.locations[x][y + h].setType('upRightWall')
-    this.locations[x + w][y + h].setType('upLeftWall')
+    this.state.locations[x][y].setType('downRightWall')
+    this.state.locations[x + w][y].setType('downLeftWall')
+    this.state.locations[x][y + h].setType('upRightWall')
+    this.state.locations[x + w][y + h].setType('upLeftWall')
     for (let i = x + 1; i < x + w; i++) {
-      this.locations[i][y].setType('horizontalWall')
-      this.locations[i][y+h].setType('horizontalWall')
+      this.state.locations[i][y].setType('horizontalWall')
+      this.state.locations[i][y+h].setType('horizontalWall')
     }
     for (let i = x; i <= x + w; i++) {
       for (let j = y; j <= y + h; j++) {
-        this.locations[i][j].room = room
-        room.locations.push(this.locations[i][j])
+        this.state.locations[i][j].room = room
+        room.locations.push(this.state.locations[i][j])
       }
     }
     for (let i = x+1; i < x + w; i++) {
       for (let j = y+1; j < y + h; j++) {
-        this.locations[i][j].setType('floor')
+        this.state.locations[i][j].setType('floor')
       }
     }
     for (let i = y + 1; i < y + h; i++) {
-      this.locations[x][i].setType('verticalWall')
-      this.locations[x+w][i].setType('verticalWall')
+      this.state.locations[x][i].setType('verticalWall')
+      this.state.locations[x+w][i].setType('verticalWall')
     }
     this.createScroll(x + 1, y + 1)
     this.createRing(x + 2, y + 1)
@@ -235,7 +245,7 @@ class Game {
     return room
   }
   hasWallBetween(a, b) {
-    return isWall(this.locations[a.x][b.y]) || isWall(this.locations[b.x][a.y])
+    return isWall(this.state.locations[a.x][b.y]) || isWall(this.state.locations[b.x][a.y])
   }
   createScroll(x, y) {
     const item = this.createItem(x, y)
@@ -268,7 +278,7 @@ class Game {
     item.amount = amount
   }
   createStaircase() {
-    const locations = this.locations.flat().filter(location => !location.item && (location.isFloor === true || location.isFloor.value === true))
+    const locations = this.state.locations.flat().filter(location => !location.item && (location.isFloor === true || location.isFloor.value === true))
     const location = randomElement(locations)
     const item = this.createItem(location.x, location.y)
     item.type = 'staircase'
@@ -278,7 +288,7 @@ class Game {
     return this.placeItem(object, x, y)
   }
   placeItem(object, x, y) {
-    const location = this.locations[x][y]
+    const location = this.state.locations[x][y]
     if (!location.canPlaceItem.value) {
       return object
     }
@@ -288,7 +298,7 @@ class Game {
   }
   createCharacter(x, y) {
     const character = new Character(this)
-    const location = this.locations[x][y]
+    const location = this.state.locations[x][y]
     location.character = character
     character.location = location
     return character
@@ -302,7 +312,7 @@ class Game {
       this.player = new Character(this)
     }
     const player = this.player
-    const locations = this.locations.flat().filter(location => !location.state.character && (location.isFloor === true || location.isFloor?.value === true))
+    const locations = this.state.locations.flat().filter(location => !location.state.character && (location.isFloor === true || location.isFloor?.value === true))
     const location = randomElement(locations)
     player.location = location
     location.character = player
@@ -310,7 +320,7 @@ class Game {
     const y = location.y
     for (let i = x - 1; i < x + 2; i++) {
       for (let j = y - 1; j < y + 2; j++) {
-        this.locations[i][j].visible = true
+        this.state.locations[i][j].visible = true
       }
     }
     if (location.room?.lit) {
@@ -326,36 +336,36 @@ class Game {
   }
   runUp() {
     const location = this.player.location
-    if (!canMoveTo(this.locations[location.x][location.y-1])) return
-    this.movePlayer(location, this.locations[location.x][location.y - 1])
+    if (!canMoveTo(this.state.locations[location.x][location.y-1])) return
+    this.movePlayer(location, this.state.locations[location.x][location.y - 1])
     this.runExcept('down', 'up')
   }
   runDown() {
     const location = this.player.location
     if (location.y === this.height - 1) return
-    if (!canMoveTo(this.locations[location.x][location.y+1])) return
-    this.movePlayer(location, this.locations[location.x][location.y + 1])
+    if (!canMoveTo(this.state.locations[location.x][location.y+1])) return
+    this.movePlayer(location, this.state.locations[location.x][location.y + 1])
     this.runExcept('up', 'down')
   }
   runLeft() {
     const location = this.player.location
     if (location.x === 0) return
-    if (!canMoveTo(this.locations[location.x-1][location.y])) return
-    this.movePlayer(location, this.locations[location.x-1][location.y])
+    if (!canMoveTo(this.state.locations[location.x-1][location.y])) return
+    this.movePlayer(location, this.state.locations[location.x-1][location.y])
     this.runExcept('right', 'left')
   }
   runRight() {
     const location = this.player.location
     if (location.x === this.width - 1) return
-    if (!canMoveTo(this.locations[location.x+1][location.y])) return
-    this.movePlayer(location, this.locations[location.x+1][location.y])
+    if (!canMoveTo(this.state.locations[location.x+1][location.y])) return
+    this.movePlayer(location, this.state.locations[location.x+1][location.y])
     this.runExcept('left', 'right')
   }
   runExcept(exceptDirection, prefDir) {
     const location = this.player.location
     const possibleLocations = []
     if (exceptDirection !== 'up') {
-      const nextLoc = this.locations[location.x][location.y - 1]
+      const nextLoc = this.state.locations[location.x][location.y - 1]
       if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
@@ -365,7 +375,7 @@ class Game {
       }
     }
     if (exceptDirection !== 'down') {
-      const nextLoc = this.locations[location.x][location.y + 1]
+      const nextLoc = this.state.locations[location.x][location.y + 1]
       if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
@@ -375,7 +385,7 @@ class Game {
       }
     }
     if (exceptDirection !== 'left') {
-      const nextLoc = this.locations[location.x - 1][location.y]
+      const nextLoc = this.state.locations[location.x - 1][location.y]
       if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
@@ -385,7 +395,7 @@ class Game {
       }
     }
     if (exceptDirection !== 'right') {
-      const nextLoc = this.locations[location.x + 1][location.y]
+      const nextLoc = this.state.locations[location.x + 1][location.y]
       if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
@@ -417,46 +427,46 @@ class Game {
   moveUp() {
     const location = this.player.location
     if (location.y === 0) return
-    this.movePlayer(location, this.locations[location.x][location.y-1])
+    this.movePlayer(location, this.state.locations[location.x][location.y-1])
   }
   moveDown() {
     const location = this.player.location
     if (location.y === this.height - 1) return
-    this.movePlayer(location, this.locations[location.x][location.y+1])
+    this.movePlayer(location, this.state.locations[location.x][location.y+1])
   }
   moveLeft() {
     const location = this.player.location
     if (location.x === 0) return
-    this.movePlayer(location, this.locations[location.x-1][location.y])
+    this.movePlayer(location, this.state.locations[location.x-1][location.y])
   }
   moveRight() {
     const location = this.player.location
     if (location.x === this.width - 1) return
-    this.movePlayer(location, this.locations[location.x+1][location.y])
+    this.movePlayer(location, this.state.locations[location.x+1][location.y])
   }
   moveUpLeft() {
     const location = this.player.location
     if (location.x === 0) return
     if (location.y === 0) return
-    this.movePlayer(location, this.locations[location.x - 1][location.y - 1])
+    this.movePlayer(location, this.state.locations[location.x - 1][location.y - 1])
   }
   moveDownLeft() {
     const location = this.player.location
     if (location.x === 0) return
     if (location.y === this.height - 1) return
-    this.movePlayer(location, this.locations[location.x-1][location.y+1])
+    this.movePlayer(location, this.state.locations[location.x-1][location.y+1])
   }
   moveUpRight() {
     const location = this.player.location
     if (location.x === this.width - 1) return
     if (location.y === 0) return
-    this.movePlayer(location, this.locations[location.x+1][location.y-1])
+    this.movePlayer(location, this.state.locations[location.x+1][location.y-1])
   }
   moveDownRight() {
     const location = this.player.location
     if (location.x === this.width - 1) return
     if (location.y === this.height - 1) return
-    this.movePlayer(location, this.locations[location.x+1][location.y+1])
+    this.movePlayer(location, this.state.locations[location.x+1][location.y+1])
   }
   movePlayer(from, to) {
     if (!canMoveTo(to)) return
@@ -467,7 +477,7 @@ class Game {
     let y = from.y
     for (let i = Math.max(x - 1, 0); i < Math.min(x + 2, this.width); i++) {
       for (let j = Math.max(y - 1, 0); j < Math.min(y + 2, this.height); j++) {
-        const location = this.locations[i][j]
+        const location = this.state.locations[i][j]
         if (location.isFloor) {
           if (!location.item || to.room !== from.room) {
             location.visible = location.room.lit
@@ -479,9 +489,9 @@ class Game {
     y = to.y
     for (let i = Math.max(x - 1, 0); i < Math.min(x + 2, this.width); i++) {
       for (let j = Math.max(y - 1, 0); j < Math.min(y + 2, this.height); j++) {
-        this.locations[i][j].seen = true
-        this.locations[i][j].mapped = true
-        this.locations[i][j].visible = true
+        this.state.locations[i][j].seen = true
+        this.state.locations[i][j].mapped = true
+        this.state.locations[i][j].visible = true
       }
     }
     from.character = null
