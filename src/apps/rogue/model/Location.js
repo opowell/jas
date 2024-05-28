@@ -1,4 +1,4 @@
-const { computed, reactive } = Vue
+const { computed, reactive, ref } = Vue
 class Location {
   constructor(x, y) {
     this.state = reactive({
@@ -39,15 +39,6 @@ class Location {
   set item(item) {
     this.state.item = item
   }
-  get character() {
-    return this.state.character
-  }
-  /**
-   * @param {null} character
-   */
-  set character(character) {
-    this.state.character = character
-  }
   setType(type) {
     this.state.type = type
   }
@@ -59,8 +50,8 @@ class Location {
     this.state.visible = false
     this.state.seen = false
     this.state.type = null
-    this.item = null
-    this.character = null
+    this.state.item = null
+    this.state.character = null
     this.state.mapped = false
   }
 }

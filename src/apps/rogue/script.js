@@ -18,12 +18,6 @@ const options = {
 }
 const { loadModule } = window['vue3-sfc-loader']
 
-function exposeToWindow(object) {
-  Object.keys(object).forEach(key => {
-    window.launchpad[key] = object[key]
-  })
-}
-
 import Game from './model/Game.js'
 window.launchpad = {}
 window.launchpad.init = () => {
@@ -37,10 +31,12 @@ window.launchpad.init = () => {
       const out = {
         game
       }
-      exposeToWindow(out)
+      Object.keys(out).forEach(key => {
+        window.launchpad[key] = out[key]
+      })
       return out
     }
-  }).mount('#app')
+  }).mount('#app')  
 }
 
 window.launchpad.init()
