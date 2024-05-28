@@ -15,6 +15,9 @@ class Location {
     this.isFloor = computed(() => {
       return this.state.type === 'floor'
     })
+    this.canPlacePlayer = computed(() => {
+      return !this.state.character && this.isFloor.value && !this.item
+    })
     this.isHallway = computed(() => {
       return this.state.type === 'hallway'
     })
