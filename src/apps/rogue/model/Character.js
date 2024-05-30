@@ -1,28 +1,37 @@
 import GameObject from './GameObject.js'
-const { computed, ref } = Vue
+const { computed } = Vue
 
 class Character extends GameObject {
   constructor(game) {
     super()
-    this.game = game
-    this.items = []
-    this.strength = {
-      current: 16,
-      maximum: 16
-    }
-    this.hits = {
-      current: 12,
-      maximum: 12
-    }
+    this.addState({
+      game,
+      items: [],
+      strength:  {
+        current: 16,
+        maximum: 16
+      },
+      hits: {
+        current: 12,
+        maximum: 12
+      },
+      experience: 0,
+      gold: 0
+    })
     this.level = computed(() => {
-      const xp = this.experience.value
+      const xp = this.experience
       if (xp < 10) {
         return 1
       }
       return Math.floor(Math.log10(xp))
     })
-    this.experience = ref(0)
-    this.gold = 0
+    this.canDrop = computed(() => {
+      return this.location.canPlaceItem
+    })
+  }
+  dropItem(index) {
+    const item = this.items.splice(index, 1)
+    this.location.item = item
   }
   /**
    * 

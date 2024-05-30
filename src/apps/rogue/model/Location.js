@@ -1,7 +1,9 @@
-const { computed, reactive, ref } = Vue
-class Location {
+import StatefulObject from "./StatefulObject.js"
+
+const { computed } = Vue
+class Location extends StatefulObject{
   constructor(x, y) {
-    this.state = reactive({
+    super({
       x,
       y,
       objects: [],
@@ -10,84 +12,37 @@ class Location {
       type: null,
       item: null,
       character: null,
-      mapped: false
+      mapped: false,
+      room: null
     })
     this.isFloor = computed(() => {
-      return this.state.type === 'floor'
+      return this.type === 'floor'
     })
     this.canPlacePlayer = computed(() => {
-      return !this.state.character && this.isFloor.value && !this.item
+      return !this.character && this.isFloor.value && !this.item
     })
     this.isHallway = computed(() => {
-      return this.state.type === 'hallway'
+      return this.type === 'hallway'
     })
     this.canPlaceItem = computed(() => {
       if (!this.isFloor.value && !this.isHallway.value) return false
-      if (!!this.state.item) return false
+      if (!!this.item) return false
       return true
     })
     this.canPlaceStairs = computed(() => {
       if (!this.isFloor.value) return false
-      if (!!this.state.item) return false
+      if (!!this.item) return false
       return true
     })
   }
-  get x() {
-    return this.state.x
-  }
-  get y() {
-    return this.state.y
-  }
-  get type() {
-    return this.state.type
-  }
-  get item() {
-    return this.state.item
-  }
-  set item(item) {
-    this.state.item = item
-  }
-  set character(character) {
-    this.state.character = character
-  }
-  get character() {
-    return this.state.character
-  }
-  set type(type) {
-    this.state.type = type
-  }
-  set seen(seen) {
-    this.state.seen = seen
-  }
-  get seen() {
-    return this.state.seen
-  }
-  set visible(visible) {
-    this.state.visible = visible
-  }
-  get visible() {
-    return this.state.visible
-  }
-  get mapped() {
-    return this.state.mapped
-  }
-  set mapped(mapped) {
-    this.state.mapped = mapped
-  }
-  setType(type) {
-    this.state.type = type
-  }
-  setItem(item) {
-    this.state.item = item
-  }
   reset() {
-    this.state.objects = []
-    this.state.visible = false
-    this.state.seen = false
-    this.state.type = null
-    this.state.item = null
-    this.state.character = null
-    this.state.mapped = false
+    this.objects = []
+    this.visible = false
+    this.seen = false
+    this.type = null
+    this.item = null
+    this.character = null
+    this.mapped = false
     this.room = null
   }
 }

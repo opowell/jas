@@ -28,7 +28,7 @@ export const spawnWeapon = () => {
   const x = Math.random()
   for (let i = 0; i < CUM_PROBS.length; i++) {
     if (x < CUM_PROBS[i]) {
-      weapon.weaponType = DEFINITIONS[defKeys[i]].name
+      weapon.name = DEFINITIONS[defKeys[i]].name
       break
     }
   }

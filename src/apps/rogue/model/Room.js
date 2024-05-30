@@ -1,27 +1,35 @@
-class Room {
+import StatefulObject from "./StatefulObject.js"
+
+class Room extends StatefulObject {
   constructor(x, y, width, height) {
-    this.x = x
-    this.y = y
-    this.width = width
-    this.height = height
-    this.locations = []
-    this.lit = false
+    super({
+      x,
+      y,
+      width,
+      height,
+      locations: [],
+      lit: false,
+      rightDoor: null,
+      leftDoor: null,
+      upDoor: null,
+      downDoor: null
+    })
   }
   setRightDoor(location) {
     this.rightDoor = location
-    location.setType('door')
+    location.type = 'door'
   }
   setLeftDoor(location) {
     this.leftDoor = location
-    location.setType('door')
+    location.type = 'door'
   }
   setUpDoor(location) {
     this.upDoor = location
-    location.setType('door')
+    location.type = 'door'
   }
   setDownDoor(location) {
     this.downDoor = location
-    location.setType('door')
+    location.type = 'door'
   }
 }
 export default Room
