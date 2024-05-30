@@ -1,23 +1,17 @@
-const { reactive } = Vue
+import StatefulObject from "./StatefulObject.js"
 
-class GameObject {
+class GameObject extends StatefulObject{
   constructor() {
-    this.state = reactive({
+    super({
       location: null,
       type: null
     })
   }
-  set type(type) {
-    this.state.type = type
-  }
-  set location(location) {
-    this.state.location = location
-  }
-  get location() {
-    return this.state.location
-  }
-  get type() {
-    return this.state.type
+  get label() {
+    if (this.name) {
+      return this.name
+    }
+    return this.type
   }
 }
 export default GameObject
