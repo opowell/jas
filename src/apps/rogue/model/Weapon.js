@@ -1,8 +1,9 @@
-import GameObject from "./GameObject.js"
-class Weapon extends GameObject {
+import Item from "./Item.js"
+class Weapon extends Item {
   constructor(weaponType) {
-    super()
-    this.weaponType = weaponType
+    super({
+      weaponType
+    })
   }
 }
 export default Weapon

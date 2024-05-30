@@ -1,9 +1,11 @@
 import Location from './Location.js'
-import GameObject from './GameObject.js'
+import Item from './Item.js'
 import Room from './Room.js'
 import Character from './Character.js'
 import { spawnWeapon } from './WeaponFactory.js'
 import StatefulObject from './StatefulObject.js'
+import Scroll from './Scroll.js'
+import ScrollFactory from './ScrollFactory.js'
 function isDiagonalMove(a, b) {
   return Math.abs(Math.abs(a.x - b.x) - Math.abs(a.y - b.y)) === 0
 }
@@ -246,8 +248,8 @@ class Game extends StatefulObject {
     return isWall(this.locations[a.x][b.y]) || isWall(this.locations[b.x][a.y])
   }
   createScroll(x, y) {
-    const item = this.createItem(x, y)
-    item.type = 'scroll'
+    const object = ScrollFactory.getScroll()
+    return this.placeItem(object, x, y)
   }
   createStick(x, y) {
     const item = this.createItem(x, y)
@@ -288,7 +290,7 @@ class Game extends StatefulObject {
     item.type = 'staircase'
   }
   createItem(x, y) {
-    const object = new GameObject()
+    const object = new Item()
     return this.placeItem(object, x, y)
   }
   placeItem(object, x, y) {
