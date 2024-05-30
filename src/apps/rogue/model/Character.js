@@ -53,7 +53,18 @@ class Character extends GameObject {
       else if (this.items.length > 25) {
         this.game.addMessage('Your pack is full.')
       } else {
-        this.items.push(item)
+        const matchingItem = this.items.find(i => {
+          if (!i.matchesForInventory) {
+            console.log('huh?', i, item)
+            return false
+          }
+          return i.matchesForInventory(item)
+        })
+        if (matchingItem) {
+          matchingItem.quantity++
+        } else {
+          this.items.push(item)
+        }
         this.game.addMessage('You picked up a ' + item.type)
         location.item = null
       }

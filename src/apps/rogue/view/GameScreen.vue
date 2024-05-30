@@ -11,8 +11,7 @@
       <div class="section">
         <div class="section-title">Inventory</div>
         <div class="section-row" v-for="(item, index) in game.player.items" :key="index">
-          <div class="section-row-label">{{ alphabet[index] + ') ' + item.type }}</div>
-          <div class="section-row-value">1</div>
+          <div class="section-row-label">{{ alphabet[index] + ') ' + (item.label || item.type) }}</div>
         </div>
       </div>
     </div>
@@ -137,7 +136,6 @@ export default {
       }
     },
     handleKeydown(event) {
-      console.log('event', event)
       if (this.dropping) {
           this.handleDroppingKeyDown(event)
           return
