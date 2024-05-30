@@ -30,7 +30,7 @@ class Character extends GameObject {
     })
   }
   dropItem(index) {
-    const item = this.items.splice(index, 1)
+    const item = this.items.splice(index, 1)[0]
     this.location.item = item
   }
   /**
