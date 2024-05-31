@@ -71,5 +71,62 @@ class Character extends GameObject {
     } 
     return true
   }
+  getCurrentVisibleItems() {
+    const out = {
+      visible: {},
+      touchable: []
+    }
+    if (this.location.room && this.location.room.lit) {
+      this.location.room.locations.forEach(location => {
+        if (location.type === 'door') {
+          out.visible[location.x + '-' + location.y] = 'door'
+        }
+      })
+    }
+    const x = this.location.x
+    const y = this.location.y
+    const touchableLocations = []
+    const game = this.game
+    touchableLocations.push(game.locations[x-1][y-1])
+    touchableLocations.push(game.locations[x-1][y])
+    touchableLocations.push(game.locations[x-1][y+1])
+    touchableLocations.push(game.locations[x][y-1])
+    touchableLocations.push(game.locations[x][y])
+    touchableLocations.push(game.locations[x][y+1])
+    touchableLocations.push(game.locations[x+1][y-1])
+    touchableLocations.push(game.locations[x+1][y])
+    touchableLocations.push(game.locations[x+1][y+1])
+    touchableLocations.forEach(location => {
+      if (location.type === 'door') {
+        out.touchable.push('door')
+      }
+      if (location.type === 'staircase') {
+        out.touchable.push('staircase')
+      }
+    })
+    out.touchable.sort()
+    return out
+  }
+  currentVisibilityMatches(oldItems) {
+    const currentItems = this.getCurrentVisibleItems()
+    const allVisibleKeys = {}
+    Object.keys(currentItems.visible).forEach(key => allVisibleKeys[key] = true)
+    Object.keys(oldItems.visible).forEach(key => allVisibleKeys[key] = true)
+    const hasNewVisibility = Object.keys(allVisibleKeys).some(key => {
+      if (currentItems.visible[key] && currentItems.visible[key] !== oldItems.visible[key]) {
+        return true
+      }
+      return false
+    })
+    console.log(hasNewVisibility, currentItems, oldItems)
+    if (hasNewVisibility) {
+      return false
+    }
+    if (currentItems.touchable.length && (currentItems.touchable.length !== oldItems.touchable.length || currentItems.touchable.every((item, index) => item === oldItems.touchable[index]))) {
+      console.log('has new touchable')
+      return false
+    }
+    return true
+  }
 }
 export default Character
