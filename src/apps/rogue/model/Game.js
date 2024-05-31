@@ -414,13 +414,19 @@ class Game extends StatefulObject {
       if (!destination && possibleLocations.length === 1 && location.isHallway) {
         destination = possibleLocations[0]
       }
-      if (destination) {
-        const movedOntoItem = this.movePlayer(location, destination.location)
-        if (movedOntoItem) {
-          return
-        }
-        this.runExcept(destination.cameFrom, destination.moveDir)
+      if (!destination) {
+        return
       }
+      const currentVisibleItems = this.player.getCurrentVisibleItems()
+      const movedOntoItem = this.movePlayer(location, destination.location)
+      if (movedOntoItem) {
+        return
+      }
+      console.log('runExcept', !this.player.currentVisibilityMatches(currentVisibleItems))
+      if (!this.player.currentVisibilityMatches(currentVisibleItems)) {
+        return
+      }
+      this.runExcept(destination.cameFrom, destination.moveDir)
     }
   }
   goDownStairs() {
