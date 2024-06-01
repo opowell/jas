@@ -401,44 +401,46 @@ class Game extends StatefulObject {
   runExcept(exceptDirection, prefDir) {
     const location = this.player.location
     const possibleLocations = []
-    if (exceptDirection !== 'up-left') {
-      const nextLoc = this.locations[location.x - 1][location.y - 1]
-      if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
-        possibleLocations.push({
-          location: nextLoc,
-          moveDir: 'up-left',
-          cameFrom: 'down-right'
-        })
+    if (location.type === 'floor') {
+      if (exceptDirection !== 'up-left') {
+        const nextLoc = this.locations[location.x - 1][location.y - 1]
+        if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
+          possibleLocations.push({
+            location: nextLoc,
+            moveDir: 'up-left',
+            cameFrom: 'down-right'
+          })
+        }
       }
-    }
-    if (exceptDirection !== 'up-right') {
-      const nextLoc = this.locations[location.x + 1][location.y - 1]
-      if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
-        possibleLocations.push({
-          location: nextLoc,
-          moveDir: 'up-right',
-          cameFrom: 'down-left'
-        })
+      if (exceptDirection !== 'up-right') {
+        const nextLoc = this.locations[location.x + 1][location.y - 1]
+        if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
+          possibleLocations.push({
+            location: nextLoc,
+            moveDir: 'up-right',
+            cameFrom: 'down-left'
+          })
+        }
       }
-    }
-    if (exceptDirection !== 'down-right') {
-      const nextLoc = this.locations[location.x + 1][location.y + 1]
-      if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
-        possibleLocations.push({
-          location: nextLoc,
-          moveDir: 'down-right',
-          cameFrom: 'up-left'
-        })
+      if (exceptDirection !== 'down-right') {
+        const nextLoc = this.locations[location.x + 1][location.y + 1]
+        if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
+          possibleLocations.push({
+            location: nextLoc,
+            moveDir: 'down-right',
+            cameFrom: 'up-left'
+          })
+        }
       }
-    }
-    if (exceptDirection !== 'down-left') {
-      const nextLoc = this.locations[location.x - 1][location.y + 1]
-      if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
-        possibleLocations.push({
-          location: nextLoc,
-          moveDir: 'down-left',
-          cameFrom: 'up-right'
-        })
+      if (exceptDirection !== 'down-left') {
+        const nextLoc = this.locations[location.x - 1][location.y + 1]
+        if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
+          possibleLocations.push({
+            location: nextLoc,
+            moveDir: 'down-left',
+            cameFrom: 'up-right'
+          })
+        }
       }
     }
     if (exceptDirection !== 'up') {
@@ -494,8 +496,8 @@ class Game extends StatefulObject {
       if (movedOntoItem) {
         return
       }
-      console.log('runExcept', !this.player.currentVisibilityMatches(currentVisibleItems))
-      if (!this.player.currentVisibilityMatches(currentVisibleItems)) {
+      const newVisibility = !this.player.currentVisibilityMatches(currentVisibleItems)
+      if (newVisibility) {
         return
       }
       this.runExcept(destination.cameFrom, destination.moveDir)
