@@ -67,6 +67,8 @@ export default {
             return '&#x25CB;'
           case 'gold':
             return '&#x263C;'
+          case 'armor':
+            return '&#x25D8;'
           case 'staircase':
             return '&#x2630;'
         }
@@ -125,6 +127,7 @@ export default {
           case 'ring':
           case 'weapon':
           case 'stick':
+          case 'armor':
           case 'potion':
           case 'scroll':
             return '#5555ff'

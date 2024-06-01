@@ -1,4 +1,6 @@
+import ArmorFactory from './ArmorFactory.js'
 import GameObject from './GameObject.js'
+import { spawnWeapon } from './WeaponFactory.js'
 const { computed } = Vue
 
 class Character extends GameObject {
@@ -18,6 +20,15 @@ class Character extends GameObject {
       experience: 0,
       gold: 0
     })
+    const mace = spawnWeapon('mace')
+    mace.enchantHit()
+    mace.enchantDamage()
+    mace.identify()
+    this.items.push(mace)
+    const ringMail = ArmorFactory.getArmor('ring mail')
+    ringMail.enchant()
+    ringMail.identify()
+    this.items.push(ringMail)
     this.numItems = computed(() => {
       return this.items.reduce((acc, value) => acc + value.quantity, 0)
     })
@@ -68,7 +79,7 @@ class Character extends GameObject {
         } else {
           this.items.push(item)
         }
-        this.game.addMessage('You picked up a ' + item.type)
+        this.game.addMessage('You picked up ' + (item.label || ('a ' + item.type)))
         location.item = null
       }
     } 

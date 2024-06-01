@@ -23,14 +23,15 @@ for (let i = 0; i < defKeys.length; i++) {
   CUM_PROBS[i] = sum
 }
 
-export const spawnWeapon = () => {
-  const weapon = new Weapon()
-  const x = Math.random()
-  for (let i = 0; i < CUM_PROBS.length; i++) {
-    if (x < CUM_PROBS[i]) {
-      weapon.name = DEFINITIONS[defKeys[i]].name
-      break
+export const spawnWeapon = (weaponType) => {
+  if (!weaponType) {
+    const x = Math.random()
+    for (let i = 0; i < CUM_PROBS.length; i++) {
+      if (x < CUM_PROBS[i]) {
+        weaponType = DEFINITIONS[defKeys[i]].name
+        break
+      }
     }
   }
-  return weapon
+  return new Weapon(weaponType)
 }
