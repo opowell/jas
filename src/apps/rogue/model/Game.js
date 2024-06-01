@@ -8,6 +8,7 @@ import ScrollFactory from './ScrollFactory.js'
 import ArmorFactory from './ArmorFactory.js'
 import { DIRECTIONS } from './Directions.js'
 import { isDiagonalMove, randomElement, randomInt } from './utils.js'
+import PotionFactory from './PotionFactory.js'
 function isWall(location) {
   return location.type.includes('Wall')
 }
@@ -242,8 +243,8 @@ class Game extends StatefulObject {
     item.type = 'stick'
   }
   createPotion(x, y) {
-    const item = this.createItem(x, y)
-    item.type = 'potion'
+    const item = PotionFactory.getPotion()
+    return this.placeItem(item, x, y)
   }
   dropItem(index) {
     this.player.dropItem(index)
