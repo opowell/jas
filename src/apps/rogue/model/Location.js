@@ -18,6 +18,9 @@ class Location extends StatefulObject{
     this.isFloor = computed(() => {
       return this.type === 'floor'
     })
+    this.isDoor = computed(() => {
+      return this.type === 'door'
+    })
     this.canPlacePlayer = computed(() => {
       return !this.character && this.isFloor.value && !this.item
     })

@@ -342,21 +342,21 @@ class Game extends StatefulObject {
   runUp() {
     const location = this.player.location
     if (!canMoveTo(this.locations[location.x][location.y-1])) return
-    this.movePlayer(location, this.locations[location.x][location.y - 1])
+    // this.movePlayer(location, this.locations[location.x][location.y - 1])
     this.runExcept('down', 'up')
   }
   runDown() {
     const location = this.player.location
     if (location.y === this.height - 1) return
     if (!canMoveTo(this.locations[location.x][location.y+1])) return
-    this.movePlayer(location, this.locations[location.x][location.y + 1])
+    // this.movePlayer(location, this.locations[location.x][location.y + 1])
     this.runExcept('up', 'down')
   }
   runLeft() {
     const location = this.player.location
     if (location.x === 0) return
     if (!canMoveTo(this.locations[location.x-1][location.y])) return
-    this.movePlayer(location, this.locations[location.x-1][location.y])
+    // this.movePlayer(location, this.locations[location.x-1][location.y])
     this.runExcept('right', 'left')
   }
   runDownLeft() {
@@ -364,7 +364,7 @@ class Game extends StatefulObject {
     if (location.x === 0) return
     if (location.y === this.height - 1) return
     if (!canMoveTo(this.locations[location.x-1][location.y+1])) return
-    this.movePlayer(location, this.locations[location.x-1][location.y+1])
+    // this.movePlayer(location, this.locations[location.x-1][location.y+1])
     this.runExcept('up-right', 'down-left')
   }
   runDownRight() {
@@ -372,7 +372,7 @@ class Game extends StatefulObject {
     if (location.x === this.width - 1) return
     if (location.y === this.height - 1) return
     if (!canMoveTo(this.locations[location.x+1][location.y+1])) return
-    this.movePlayer(location, this.locations[location.x+1][location.y+1])
+    // this.movePlayer(location, this.locations[location.x+1][location.y+1])
     this.runExcept('up-left', 'down-right')
   }
   runUpRight() {
@@ -380,7 +380,7 @@ class Game extends StatefulObject {
     if (location.x === 0) return
     if (location.y === this.height - 1) return
     if (!canMoveTo(this.locations[location.x+1][location.y-1])) return
-    this.movePlayer(location, this.locations[location.x+1][location.y-1])
+    // this.movePlayer(location, this.locations[location.x+1][location.y-1])
     this.runExcept('down-left', 'up-right')
   }
   runUpLeft() {
@@ -388,14 +388,14 @@ class Game extends StatefulObject {
     if (location.x === 0) return
     if (location.y === 0) return
     if (!canMoveTo(this.locations[location.x-1][location.y-1])) return
-    this.movePlayer(location, this.locations[location.x-1][location.y-1])
+    // this.movePlayer(location, this.locations[location.x-1][location.y-1])
     this.runExcept('down-right', 'up-left')
   }
   runRight() {
     const location = this.player.location
     if (location.x === this.width - 1) return
     if (!canMoveTo(this.locations[location.x+1][location.y])) return
-    this.movePlayer(location, this.locations[location.x+1][location.y])
+    // this.movePlayer(location, this.locations[location.x+1][location.y])
     this.runExcept('left', 'right')
   }
   runExcept(exceptDirection, prefDir) {
@@ -404,7 +404,7 @@ class Game extends StatefulObject {
     if (location.type === 'floor') {
       if (exceptDirection !== 'up-left') {
         const nextLoc = this.locations[location.x - 1][location.y - 1]
-        if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
+        if (canMoveTo(nextLoc)) {
           possibleLocations.push({
             location: nextLoc,
             moveDir: 'up-left',
@@ -414,7 +414,7 @@ class Game extends StatefulObject {
       }
       if (exceptDirection !== 'up-right') {
         const nextLoc = this.locations[location.x + 1][location.y - 1]
-        if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
+        if (canMoveTo(nextLoc)) {
           possibleLocations.push({
             location: nextLoc,
             moveDir: 'up-right',
@@ -424,7 +424,7 @@ class Game extends StatefulObject {
       }
       if (exceptDirection !== 'down-right') {
         const nextLoc = this.locations[location.x + 1][location.y + 1]
-        if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
+        if (canMoveTo(nextLoc)) {
           possibleLocations.push({
             location: nextLoc,
             moveDir: 'down-right',
@@ -434,7 +434,7 @@ class Game extends StatefulObject {
       }
       if (exceptDirection !== 'down-left') {
         const nextLoc = this.locations[location.x - 1][location.y + 1]
-        if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
+        if (canMoveTo(nextLoc)) {
           possibleLocations.push({
             location: nextLoc,
             moveDir: 'down-left',
@@ -445,7 +445,7 @@ class Game extends StatefulObject {
     }
     if (exceptDirection !== 'up') {
       const nextLoc = this.locations[location.x][location.y - 1]
-      if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
+      if (canMoveTo(nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
           moveDir: 'up',
@@ -455,7 +455,7 @@ class Game extends StatefulObject {
     }
     if (exceptDirection !== 'down') {
       const nextLoc = this.locations[location.x][location.y + 1]
-      if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
+      if (canMoveTo(nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
           moveDir: 'down',
@@ -465,7 +465,7 @@ class Game extends StatefulObject {
     }
     if (exceptDirection !== 'left') {
       const nextLoc = this.locations[location.x - 1][location.y]
-      if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
+      if (canMoveTo(nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
           moveDir: 'left',
@@ -475,7 +475,7 @@ class Game extends StatefulObject {
     }
     if (exceptDirection !== 'right') {
       const nextLoc = this.locations[location.x + 1][location.y]
-      if (canMoveTo(nextLoc) && !isCrossingThreshhold(location, nextLoc)) {
+      if (canMoveTo(nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
           moveDir: 'right',
@@ -483,9 +483,10 @@ class Game extends StatefulObject {
         })
       }
     }
-    if (location.isFloor || (possibleLocations.length === 1 && location.isHallway)) {
+    console.log('runExcept', location, possibleLocations, prefDir)
+    if (location.isFloor || (possibleLocations.length === 1 && (location.isHallway || location.isDoor))) {
       let destination = possibleLocations.find(loc => loc.moveDir === prefDir)
-      if (!destination && possibleLocations.length === 1 && location.isHallway) {
+      if (!destination && possibleLocations.length === 1 && (location.isHallway || location.isDoor)) {
         destination = possibleLocations[0]
       }
       if (!destination) {
