@@ -128,6 +128,10 @@ export default {
       this.dropping = true
       this.game.messages.push('Drop: enter a letter, or Esc to cancel')
     },
+    wieldPrompt() {
+      this.wielding = true
+      this.game.messages.push('Wield: enter a letter, or Esc to cancel')
+    },
     handleDroppingKeyDown(event) {
       if (event.key === 'Escape') {
         this.game.clearCurrentMessage()
@@ -139,11 +143,26 @@ export default {
         this.game.clearCurrentMessage()
       }
     },
+    handleWieldingKeyDown(event) {
+      if (event.key === 'Escape') {
+        this.game.clearCurrentMessage()
+      }
+      const index = this.alphabet.indexOf(event.key)
+      if (index > -1 && index < this.game.player.items.length) {
+        this.game.player.wield(index)
+        this.wielding = false
+        this.game.clearCurrentMessage()
+      }
+    },
     handleKeydown(event) {
       if (this.dropping) {
-          this.handleDroppingKeyDown(event)
-          return
-        }
+        this.handleDroppingKeyDown(event)
+        return
+      }
+      if (this.wielding) {
+        this.handleWieldingKeyDown(event)
+        return
+      }
       if (this.game.messages.length > 1 && event.key !== ' ') {
         return
       }
@@ -207,6 +226,9 @@ export default {
           break
         case 'd':
           this.dropPrompt()
+          break
+        case 'w':
+          this.wieldPrompt()
           break
       }
     }

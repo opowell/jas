@@ -18,7 +18,8 @@ class Character extends GameObject {
         maximum: 12
       },
       experience: 0,
-      gold: 0
+      gold: 0,
+      weapon: null
     })
     const mace = spawnMace()
     mace.enchantHit()
