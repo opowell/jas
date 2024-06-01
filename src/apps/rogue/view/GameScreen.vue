@@ -75,13 +75,17 @@ export default {
           value: player.gold
         },
         {
+          label: 'Damage',
+          value: player.damage
+        },
+        {
           label: 'Armor',
-          value: player.armor
+          value: player.armorLevel
         },
         {
           label: 'Exp',
           value: player.level + '/' + player.experience
-        }  
+        }
       ]
     },
     message() {

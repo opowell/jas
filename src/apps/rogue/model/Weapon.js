@@ -1,11 +1,13 @@
 import Item from "./Item.js"
+
 class Weapon extends Item {
-  constructor(weaponType) {
+  constructor(type) {
     super({
-      weaponType,
+      weaponType: type.name,
       hitBonus: 0,
       damageBonus: 0,
-      identified: false
+      identified: false,
+      damage: type.damage
     })
     this.type = 'weapon'
   }
