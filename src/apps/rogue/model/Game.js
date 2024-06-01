@@ -6,6 +6,7 @@ import { spawnWeapon } from './WeaponFactory.js'
 import StatefulObject from './StatefulObject.js'
 import ScrollFactory from './ScrollFactory.js'
 import ArmorFactory from './ArmorFactory.js'
+import { DIRECTIONS } from './Directions.js'
 import { isDiagonalMove, randomElement, randomInt } from './utils.js'
 function isWall(location) {
   return location.type.includes('Wall')
@@ -323,145 +324,129 @@ class Game extends StatefulObject {
   runUp() {
     const location = this.player.location
     if (!canMoveTo(this.locations[location.x][location.y-1])) return
-    // this.movePlayer(location, this.locations[location.x][location.y - 1])
-    this.runExcept('down', 'up')
+    this.runExcept(DIRECTIONS.DOWN)
   }
   runDown() {
     const location = this.player.location
     if (location.y === this.height - 1) return
     if (!canMoveTo(this.locations[location.x][location.y+1])) return
-    // this.movePlayer(location, this.locations[location.x][location.y + 1])
-    this.runExcept('up', 'down')
+    this.runExcept(DIRECTIONS.UP)
   }
   runLeft() {
     const location = this.player.location
     if (location.x === 0) return
     if (!canMoveTo(this.locations[location.x-1][location.y])) return
-    // this.movePlayer(location, this.locations[location.x-1][location.y])
-    this.runExcept('right', 'left')
+    this.runExcept(DIRECTIONS.RIGHT)
   }
   runDownLeft() {
     const location = this.player.location
     if (location.x === 0) return
     if (location.y === this.height - 1) return
     if (!canMoveTo(this.locations[location.x-1][location.y+1])) return
-    // this.movePlayer(location, this.locations[location.x-1][location.y+1])
-    this.runExcept('up-right', 'down-left')
+    this.runExcept(DIRECTIONS.UP_RIGHT)
   }
   runDownRight() {
     const location = this.player.location
     if (location.x === this.width - 1) return
     if (location.y === this.height - 1) return
     if (!canMoveTo(this.locations[location.x+1][location.y+1])) return
-    // this.movePlayer(location, this.locations[location.x+1][location.y+1])
-    this.runExcept('up-left', 'down-right')
+    this.runExcept(DIRECTIONS.UP_LEFT)
   }
   runUpRight() {
     const location = this.player.location
     if (location.x === 0) return
     if (location.y === this.height - 1) return
     if (!canMoveTo(this.locations[location.x+1][location.y-1])) return
-    // this.movePlayer(location, this.locations[location.x+1][location.y-1])
-    this.runExcept('down-left', 'up-right')
+    this.runExcept(DIRECTIONS.DOWN_LEFT)
   }
   runUpLeft() {
     const location = this.player.location
     if (location.x === 0) return
     if (location.y === 0) return
     if (!canMoveTo(this.locations[location.x-1][location.y-1])) return
-    // this.movePlayer(location, this.locations[location.x-1][location.y-1])
-    this.runExcept('down-right', 'up-left')
+    this.runExcept(DIRECTIONS.DOWN_RIGHT)
   }
   runRight() {
     const location = this.player.location
     if (location.x === this.width - 1) return
     if (!canMoveTo(this.locations[location.x+1][location.y])) return
-    // this.movePlayer(location, this.locations[location.x+1][location.y])
-    this.runExcept('left', 'right')
+    this.runExcept(DIRECTIONS.LEFT)
   }
-  runExcept(exceptDirection, prefDir) {
-    console.log('runExcept', exceptDirection, prefDir)
+  runExcept(exceptDirection) {
+    const prefDir = exceptDirection.opp
     const location = this.player.location
     const possibleLocations = []
     if (location.type === 'floor') {
-      if (exceptDirection !== 'up-left') {
+      if (exceptDirection !== DIRECTIONS.UP_LEFT) {
         const nextLoc = this.locations[location.x - 1][location.y - 1]
         if (canMoveTo(nextLoc)) {
           possibleLocations.push({
             location: nextLoc,
-            moveDir: 'up-left',
-            cameFrom: 'down-right'
+            moveDir: DIRECTIONS.UP_LEFT,
           })
         }
       }
-      if (exceptDirection !== 'up-right') {
+      if (exceptDirection !== DIRECTIONS.UP_RIGHT) {
         const nextLoc = this.locations[location.x + 1][location.y - 1]
         if (canMoveTo(nextLoc)) {
           possibleLocations.push({
             location: nextLoc,
-            moveDir: 'up-right',
-            cameFrom: 'down-left'
+            moveDir: DIRECTIONS.UP_RIGHT,
           })
         }
       }
-      if (exceptDirection !== 'down-right') {
+      if (exceptDirection !== DIRECTIONS.DOWN_RIGHT) {
         const nextLoc = this.locations[location.x + 1][location.y + 1]
         if (canMoveTo(nextLoc)) {
           possibleLocations.push({
             location: nextLoc,
-            moveDir: 'down-right',
-            cameFrom: 'up-left'
+            moveDir: DIRECTIONS.DOWN_RIGHT,
           })
         }
       }
-      if (exceptDirection !== 'down-left') {
+      if (exceptDirection !== DIRECTIONS.DOWN_LEFT) {
         const nextLoc = this.locations[location.x - 1][location.y + 1]
         if (canMoveTo(nextLoc)) {
           possibleLocations.push({
             location: nextLoc,
-            moveDir: 'down-left',
-            cameFrom: 'up-right'
+            moveDir: DIRECTIONS.DOWN_LEFT,
           })
         }
       }
     }
-    if (exceptDirection !== 'up') {
+    if (exceptDirection !== DIRECTIONS.UP) {
       const nextLoc = this.locations[location.x][location.y - 1]
       if (canMoveTo(nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
-          moveDir: 'up',
-          cameFrom: 'down'
+          moveDir: DIRECTIONS.UP,
         })
       }
     }
-    if (exceptDirection !== 'down') {
+    if (exceptDirection !== DIRECTIONS.DOWN) {
       const nextLoc = this.locations[location.x][location.y + 1]
       if (canMoveTo(nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
-          moveDir: 'down',
-          cameFrom: 'up'
+          moveDir: DIRECTIONS.DOWN,
         })
       }
     }
-    if (exceptDirection !== 'left') {
+    if (exceptDirection !== DIRECTIONS.LEFT) {
       const nextLoc = this.locations[location.x - 1][location.y]
       if (canMoveTo(nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
-          moveDir: 'left',
-          cameFrom: 'right'
+          moveDir: DIRECTIONS.LEFT,
         })
       }
     }
-    if (exceptDirection !== 'right') {
+    if (exceptDirection !== DIRECTIONS.RIGHT) {
       const nextLoc = this.locations[location.x + 1][location.y]
       if (canMoveTo(nextLoc)) {
         possibleLocations.push({
           location: nextLoc,
-          moveDir: 'right',
-          cameFrom: 'left'
+          moveDir: DIRECTIONS.RIGHT,
         })
       }
     }
@@ -471,21 +456,18 @@ class Game extends StatefulObject {
         destination = possibleLocations[0]
       }
       if (!destination) {
-        console.log('stop no destination')
         return
       }
       const currentVisibleItems = this.player.getCurrentVisibleItems()
       const movedOntoItem = this.movePlayer(location, destination.location)
       if (movedOntoItem) {
-        console.log('stop on item')
         return
       }
       const newVisibility = !this.player.currentVisibilityMatches(currentVisibleItems)
       if (newVisibility) {
-        console.log('stop newVisibility')
         return
       }
-      this.runExcept(destination.cameFrom, destination.moveDir)
+      this.runExcept(destination.moveDir.opp)
     }
   }
   goDownStairs() {

@@ -3,15 +3,18 @@ import Weapon from "./Weapon.js"
 const DEFINITIONS = {
   MACE: {
     name: 'mace',
-    prob: 0.6
+    prob: 0.6,
+    damage: '2d4'
   },
   LONG_SWORD: {
     name: 'long sword',
-    prob: 0.3
+    prob: 0.3,
+    damage: '3d4'
   },
   TWO_HANDED_SWORD: {
     name: 'two-handed sword',
-    prob: 0.1
+    prob: 0.1,
+    damage: '4d4'
   }
 }
 
@@ -28,10 +31,14 @@ export const spawnWeapon = (weaponType) => {
     const x = Math.random()
     for (let i = 0; i < CUM_PROBS.length; i++) {
       if (x < CUM_PROBS[i]) {
-        weaponType = DEFINITIONS[defKeys[i]].name
+        weaponType = DEFINITIONS[defKeys[i]]
         break
       }
     }
   }
   return new Weapon(weaponType)
+}
+
+export const spawnMace = () => {
+  return new Weapon(DEFINITIONS.MACE)
 }

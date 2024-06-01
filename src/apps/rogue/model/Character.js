@@ -1,6 +1,6 @@
 import ArmorFactory from './ArmorFactory.js'
 import GameObject from './GameObject.js'
-import { spawnWeapon } from './WeaponFactory.js'
+import { spawnMace } from './WeaponFactory.js'
 const { computed } = Vue
 
 class Character extends GameObject {
@@ -20,7 +20,7 @@ class Character extends GameObject {
       experience: 0,
       gold: 0
     })
-    const mace = spawnWeapon('mace')
+    const mace = spawnMace()
     mace.enchantHit()
     mace.enchantDamage()
     mace.identify()
@@ -41,6 +41,20 @@ class Character extends GameObject {
     })
     this.canDrop = computed(() => {
       return this.location.canPlaceItem
+    })
+    this.armor = ringMail
+    this.armorLevel = computed(() => {
+      if (!this.armor) {
+        return 2
+      }
+      return this.armor.defence
+    })
+    this.weapon = mace
+    this.damage = computed(() => {
+      if (!this.weapon) {
+        return 0
+      }
+      return this.weapon.damage
     })
   }
   dropItem(index) {
