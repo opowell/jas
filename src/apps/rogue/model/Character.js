@@ -100,7 +100,7 @@ class Character extends GameObject {
       if (location.type === 'door') {
         out.touchable.push('door')
       }
-      if (location.type === 'staircase') {
+      if (location.item?.type === 'staircase') {
         out.touchable.push('staircase')
       }
     })
@@ -118,12 +118,10 @@ class Character extends GameObject {
       }
       return false
     })
-    console.log(hasNewVisibility, currentItems, oldItems)
     if (hasNewVisibility) {
       return false
     }
-    if (currentItems.touchable.length && (currentItems.touchable.length !== oldItems.touchable.length || currentItems.touchable.every((item, index) => item === oldItems.touchable[index]))) {
-      console.log('has new touchable')
+    if (currentItems.touchable.length && (currentItems.touchable.length !== oldItems.touchable.length || currentItems.touchable.some((item, index) => item !== oldItems.touchable[index]))) {
       return false
     }
     return true
