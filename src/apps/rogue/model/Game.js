@@ -4,24 +4,11 @@ import Room from './Room.js'
 import Character from './Character.js'
 import { spawnWeapon } from './WeaponFactory.js'
 import StatefulObject from './StatefulObject.js'
-import Scroll from './Scroll.js'
 import ScrollFactory from './ScrollFactory.js'
-function isDiagonalMove(a, b) {
-  return Math.abs(Math.abs(a.x - b.x) - Math.abs(a.y - b.y)) === 0
-}
-
+import ArmorFactory from './ArmorFactory.js'
+import { isDiagonalMove, randomElement, randomInt } from './utils.js'
 function isWall(location) {
   return location.type.includes('Wall')
-}
-
-function isCrossingThreshhold(from, to) {
-  if (isDoor(from) && to.isFloor) return true
-  if (isDoor(from) && to.isHallway) return true
-  return false
-}
-
-function isDoor(location) {
-  return location.type === 'door'
 }
 
 function canMoveTo(location) {
@@ -33,28 +20,6 @@ const WIDTH = 60
 const HEIGHT = 30
 const NUM_ROOM_COLS = 3
 const NUM_ROOM_ROWS = 2
-
-/**
- * 
- * @param {number} x 
- * @param {number} y 
- * @returns a random integer from [x, y].
- */
-const randomInt = (x, y = 0) => {
-  const min = Math.min(x, y)
-  const dist = Math.abs(x - y)
-  return Math.round(Math.random() * dist) + min
-}
-/**
- * 
- * @param {Array} array
- * @returns a random element from the array.
- */
-const randomElement = (array) => {
-  if (array.length === 0) return
-  const index = randomInt(array.length - 1)
-  return array[index]
-}
 
 class Game extends StatefulObject {
   constructor() {
@@ -70,6 +35,7 @@ class Game extends StatefulObject {
     this.width = WIDTH
     this.height = HEIGHT
     this.createLocations()
+    this.player = new Character(this)
     this.startNewLevel()
   }
   startNewLevel() {
@@ -236,19 +202,38 @@ class Game extends StatefulObject {
       this.locations[x][i].type = 'verticalWall'
       this.locations[x+w][i].type = 'verticalWall'
     }
-    this.createScroll(x + 1, y + 1)
-    this.createRing(x + 2, y + 1)
-    this.createPotion(x + 1, y + 2)
-    this.createWeapon(x + 2, y + 2)
-    this.createStick(x + 3, y + 2)
-    this.createGold(x + 2, y + 3, randomInt(1, 400))
+    this.spawnRandomItem(x+1, y+1)
+    this.spawnRandomItem(x+2, y+1)
+    this.spawnRandomItem(x+1, y+2)
     return room
+  }
+  spawnRandomItem(x, y) {
+    const rnd = Math.random()
+    if (rnd < 0.15) {
+      this.createScroll(x, y)
+    } else if (rnd < 0.3) {
+      this.createRing(x, y)
+    } else if (rnd < 0.45) {
+      this.createPotion(x, y)
+    } else if (rnd < 0.6) {
+      this.createWeapon(x, y)
+    } else if (rnd < 0.75) {
+      this.createArmor(x, y)
+    } else if (rnd < 0.9) {
+      this.createStick(x, y)
+    } else {
+      this.createGold(x, y, randomInt(1, 400))
+    }
   }
   hasWallBetween(a, b) {
     return isWall(this.locations[a.x][b.y]) || isWall(this.locations[b.x][a.y])
   }
   createScroll(x, y) {
     const object = ScrollFactory.getScroll()
+    return this.placeItem(object, x, y)
+  }
+  createArmor(x, y) {
+    const object = ArmorFactory.getArmor()
     return this.placeItem(object, x, y)
   }
   createStick(x, y) {
@@ -268,7 +253,6 @@ class Game extends StatefulObject {
   }
   createWeapon(x, y) {
     const item = spawnWeapon()
-    item.type = 'weapon'
     this.placeItem(item, x, y)
   }
   createRing(x, y) {
@@ -313,9 +297,6 @@ class Game extends StatefulObject {
     this.messages.push(message)
   }
   createPlayer() {
-    if (!this.player) {
-      this.player = new Character(this)
-    }
     const player = this.player
     const locations = this.locations.flat().filter(location => location.canPlacePlayer === true || location.canPlacePlayer?.value === true)
     const location = randomElement(locations)
