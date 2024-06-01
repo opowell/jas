@@ -156,6 +156,18 @@ export default {
         case 'H':
           this.game.runLeft()
           break
+        case 'B':
+          this.game.runDownLeft()
+          break
+        case 'Z':
+          this.game.runUpLeft()
+          break
+        case 'N':
+          this.game.runDownRight()
+          break
+        case 'U':
+          this.game.runUpRight()
+          break
         case 'J':
           this.game.runDown()
           break
