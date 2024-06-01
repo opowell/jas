@@ -18,6 +18,9 @@ class Character extends GameObject {
       experience: 0,
       gold: 0
     })
+    this.numItems = computed(() => {
+      return this.items.reduce((acc, value) => acc + value.quantity, 0)
+    })
     this.level = computed(() => {
       const xp = this.experience
       if (xp < 10) {
@@ -50,7 +53,7 @@ class Character extends GameObject {
         this.game.addMessage('You picked up ' + item.amount + ' pieces of gold.')
         location.item = null
       }
-      else if (this.items.length > 25) {
+      else if (this.numItems > 25) {
         this.game.addMessage('Your pack is full.')
       } else {
         const matchingItem = this.items.find(i => {
@@ -121,7 +124,7 @@ class Character extends GameObject {
     if (hasNewVisibility) {
       return false
     }
-    if (currentItems.touchable.length && (currentItems.touchable.length !== oldItems.touchable.length || currentItems.touchable.some((item, index) => item !== oldItems.touchable[index]))) {
+    if (currentItems.touchable.length && (currentItems.touchable.length > oldItems.touchable.length || currentItems.touchable.some((item, index) => item !== oldItems.touchable[index]))) {
       return false
     }
     return true

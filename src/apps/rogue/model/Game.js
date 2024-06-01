@@ -399,6 +399,7 @@ class Game extends StatefulObject {
     this.runExcept('left', 'right')
   }
   runExcept(exceptDirection, prefDir) {
+    console.log('runExcept', exceptDirection, prefDir)
     const location = this.player.location
     const possibleLocations = []
     if (location.type === 'floor') {
@@ -483,22 +484,24 @@ class Game extends StatefulObject {
         })
       }
     }
-    console.log('runExcept', location, possibleLocations, prefDir)
-    if (location.isFloor || (possibleLocations.length === 1 && (location.isHallway || location.isDoor))) {
+    if (true || location.isFloor || (possibleLocations.length === 1 && (location.isHallway || location.isDoor))) {
       let destination = possibleLocations.find(loc => loc.moveDir === prefDir)
       if (!destination && possibleLocations.length === 1 && (location.isHallway || location.isDoor)) {
         destination = possibleLocations[0]
       }
       if (!destination) {
+        console.log('stop no destination')
         return
       }
       const currentVisibleItems = this.player.getCurrentVisibleItems()
       const movedOntoItem = this.movePlayer(location, destination.location)
       if (movedOntoItem) {
+        console.log('stop on item')
         return
       }
       const newVisibility = !this.player.currentVisibilityMatches(currentVisibleItems)
       if (newVisibility) {
+        console.log('stop newVisibility')
         return
       }
       this.runExcept(destination.cameFrom, destination.moveDir)
