@@ -12,13 +12,14 @@ const DEFINITIONS = {
   },
   POISON: {
     name: 'poison',
-    prob: 0.05,
+    prob: 0.4,
   }
 }
 
 export default class PotionFactory {
   static getPotion() {
     const type = randomElement(DEFINITIONS, def => def.prob)
+    console.log(type)
     return new Potion(type)
   }
 }
