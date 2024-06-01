@@ -2,7 +2,15 @@ import Scroll from "./Scroll.js"
 
 const TYPES = {
   GAIN_STRENGTH: 'gain strength',
-  HEALING: 'healing'
+  HEALING: 'healing',
+  POISON: 'poison',
+  GAIN_LEVEL: 'gain level',
+  RESTORE_STRENGTH: 'restore strength',
+  EXTRA_HEALING: 'extra healing',
+  BLINDNESS: 'blindness',
+  DETECT_MAGIC: 'detect magic',
+  DETECT_FOOD: 'detect food',
+  PARALYSIS: 'paralysis'
 }
 
 export default class ScrollFactory {

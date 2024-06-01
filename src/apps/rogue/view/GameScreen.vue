@@ -135,6 +135,8 @@ export default {
     handleDroppingKeyDown(event) {
       if (event.key === 'Escape') {
         this.game.clearCurrentMessage()
+        this.dropping = false
+        return
       }
       const index = this.alphabet.indexOf(event.key)
       if (index > -1 && index < this.game.player.items.length) {
@@ -146,6 +148,8 @@ export default {
     handleWieldingKeyDown(event) {
       if (event.key === 'Escape') {
         this.game.clearCurrentMessage()
+        this.wielding = false
+        return
       }
       const index = this.alphabet.indexOf(event.key)
       if (index > -1 && index < this.game.player.items.length) {

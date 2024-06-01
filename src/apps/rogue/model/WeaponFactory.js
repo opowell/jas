@@ -1,4 +1,5 @@
 import Weapon from "./Weapon.js"
+import { randomElement } from "./utils.js"
 
 const DEFINITIONS = {
   MACE: {
@@ -18,24 +19,11 @@ const DEFINITIONS = {
   }
 }
 
-const CUM_PROBS = []
-const defKeys = Object.keys(DEFINITIONS)
-let sum = 0
-for (let i = 0; i < defKeys.length; i++) {
-  sum += DEFINITIONS[defKeys[i]].prob
-  CUM_PROBS[i] = sum
-}
-
 export const spawnWeapon = (weaponType) => {
   if (!weaponType) {
-    const x = Math.random()
-    for (let i = 0; i < CUM_PROBS.length; i++) {
-      if (x < CUM_PROBS[i]) {
-        weaponType = DEFINITIONS[defKeys[i]]
-        break
-      }
-    }
+    weaponType = randomElement(DEFINITIONS, def => def.prob)
   }
+  console.log('weaponType', weaponType)
   return new Weapon(weaponType)
 }
 
