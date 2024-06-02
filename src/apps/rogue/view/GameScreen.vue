@@ -48,6 +48,7 @@ export default {
       alphabet: 'abcdefghijklmnopqrstuvwxyz',
       showMap: true,
       dropping: false,
+      wearingArmor: false
     }
   },
   computed: {
@@ -132,6 +133,10 @@ export default {
       this.wielding = true
       this.game.messages.push('Wield: enter a letter, or Esc to cancel')
     },
+    wearingArmorPrompt() {
+      this.wearingArmor = true
+      this.game.messages.push('Wear armor: enter a letter, or Esc to cancel')
+    },
     handleDroppingKeyDown(event) {
       if (event.key === 'Escape') {
         this.game.clearCurrentMessage()
@@ -142,6 +147,19 @@ export default {
       if (index > -1 && index < this.game.player.items.length) {
         this.game.dropItem(index)
         this.dropping = false
+        this.game.clearCurrentMessage()
+      }
+    },
+    handleWearingArmorKeyDown(event) {
+      if (event.key === 'Escape') {
+        this.game.clearCurrentMessage()
+        this.wearingArmor = false
+        return
+      }
+      const index = this.alphabet.indexOf(event.key)
+      if (index > -1 && index < this.game.player.items.length) {
+        this.game.player.wearArmor(this.game.player.items[index])
+        this.wearingArmor = false
         this.game.clearCurrentMessage()
       }
     },
@@ -159,6 +177,10 @@ export default {
       }
     },
     handleKeydown(event) {
+      if (this.wearingArmor) {
+        this.handleWearingArmorKeyDown(event)
+        return
+      }
       if (this.dropping) {
         this.handleDroppingKeyDown(event)
         return
@@ -233,6 +255,13 @@ export default {
           break
         case 'w':
           this.wieldPrompt()
+          break
+        case 'T':
+          this.game.player.takeOffArmor()
+          this.game.messages.push('Removed armor.')
+          break
+        case 'W':
+          this.wearingArmorPrompt()
           break
       }
     }
