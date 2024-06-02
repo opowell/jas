@@ -55,8 +55,17 @@ class Character extends GameObject {
       if (!this.weapon) {
         return 0
       }
-      return this.weapon.damage
+      if (this.weapon.identified) {
+        if (this.weapon.damageBonus !== 0) {
+          return this.weapon.damage + '+' + this.weapon.damageBonus
+        }
+        return this.weapon.damage
+      }
+      return this.weapon.damage + '+?'
     })
+  }
+  wield(item) {
+    this.weapon = item
   }
   dropItem(index) {
     const item = this.items.splice(index, 1)[0]
