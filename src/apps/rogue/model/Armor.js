@@ -13,8 +13,11 @@ class Armor extends Item {
       bonus: 0,
       identified: false
     })
+    this.baseDefence = computed(() => {
+      return ARMOR_LEVELS[this.armorType]
+    })
     this.defence = computed(() => {
-      return ARMOR_LEVELS[this.armorType] + this.bonus
+      return this.baseDefence.value + this.bonus
     })
   }
   get label() {

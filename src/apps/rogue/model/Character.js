@@ -19,7 +19,8 @@ class Character extends GameObject {
       },
       experience: 0,
       gold: 0,
-      weapon: null
+      weapon: null,
+      armor: null
     })
     const mace = spawnMace()
     mace.enchantHit()
@@ -64,8 +65,15 @@ class Character extends GameObject {
       return this.weapon.damage + '+?'
     })
   }
+  takeOffArmor() {
+    this.armor = null
+  }
   wield(item) {
     this.weapon = item
+  }
+  wearArmor(item) {
+    this.armor = item
+    item.identified = true
   }
   dropItem(index) {
     const item = this.items.splice(index, 1)[0]
