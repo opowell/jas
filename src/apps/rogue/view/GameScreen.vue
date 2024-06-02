@@ -153,7 +153,7 @@ export default {
       }
       const index = this.alphabet.indexOf(event.key)
       if (index > -1 && index < this.game.player.items.length) {
-        this.game.player.wield(index)
+        this.game.player.wield(this.game.player.items[index])
         this.wielding = false
         this.game.clearCurrentMessage()
       }
