@@ -16,10 +16,10 @@ export const randomInt = (x, y = 0, weights) => {
     let curSum = 0
     let index = 0
     for (let i = 0; i < cumWeights.length; i++) {
-        curSum = cumWeights[i]
         if (curSum > draw) {
             break
         }
+        curSum = cumWeights[i]
         index++
     }
     const min = Math.min(x, y)
