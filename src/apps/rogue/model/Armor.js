@@ -1,20 +1,17 @@
 import Item from "./Item.js"
 const { computed } = Vue
-const ARMOR_LEVELS = {
-  'ring mail': 4,
-  'chain mail': 6
-}
 
 class Armor extends Item {
-  constructor(armorType) {
+  constructor(armorType, cursed = false) {
     super({
       type: 'armor',
-      armorType,
+      armorType: armorType.name,
       bonus: 0,
+      cursed,
       identified: false
     })
     this.baseDefence = computed(() => {
-      return ARMOR_LEVELS[this.armorType]
+      return armorType.defence
     })
     this.defence = computed(() => {
       return this.baseDefence.value + this.bonus

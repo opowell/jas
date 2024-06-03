@@ -258,7 +258,6 @@ export default {
           break
         case 'T':
           this.game.player.takeOffArmor()
-          this.game.messages.push('Removed armor.')
           break
         case 'W':
           this.wearingArmorPrompt()

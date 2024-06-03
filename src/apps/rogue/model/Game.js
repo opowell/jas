@@ -2,13 +2,10 @@ import Location from './Location.js'
 import Item from './Item.js'
 import Room from './Room.js'
 import Character from './Character.js'
-import { spawnWeapon } from './WeaponFactory.js'
 import StatefulObject from './StatefulObject.js'
-import ScrollFactory from './ScrollFactory.js'
-import ArmorFactory from './ArmorFactory.js'
 import { DIRECTIONS } from './Directions.js'
 import { isDiagonalMove, randomElement, randomInt } from './utils.js'
-import PotionFactory from './PotionFactory.js'
+import { getItem } from './ItemFactory.js'
 function isWall(location) {
   return location.type.includes('Wall')
 }
@@ -210,56 +207,15 @@ class Game extends StatefulObject {
     return room
   }
   spawnRandomItem(x, y) {
-    const rnd = Math.random()
-    if (rnd < 0.15) {
-      this.createScroll(x, y)
-    } else if (rnd < 0.3) {
-      this.createRing(x, y)
-    } else if (rnd < 0.45) {
-      this.createPotion(x, y)
-    } else if (rnd < 0.6) {
-      this.createWeapon(x, y)
-    } else if (rnd < 0.75) {
-      this.createArmor(x, y)
-    } else if (rnd < 0.9) {
-      this.createStick(x, y)
-    } else {
-      this.createGold(x, y, randomInt(1, 400))
-    }
+    const item = getItem()
+    this.placeItem(item, x, y)
+    // this.createGold(x, y, randomInt(1, 400))
   }
   hasWallBetween(a, b) {
     return isWall(this.locations[a.x][b.y]) || isWall(this.locations[b.x][a.y])
   }
-  createScroll(x, y) {
-    const object = ScrollFactory.getScroll()
-    return this.placeItem(object, x, y)
-  }
-  createArmor(x, y) {
-    const object = ArmorFactory.getArmor()
-    return this.placeItem(object, x, y)
-  }
-  createStick(x, y) {
-    const item = this.createItem(x, y)
-    item.type = 'stick'
-  }
-  createPotion(x, y) {
-    const item = PotionFactory.getPotion()
-    return this.placeItem(item, x, y)
-  }
   dropItem(index) {
     this.player.dropItem(index)
-  }
-  createRing(x, y) {
-    const item = this.createItem(x, y)
-    item.type = 'ring'
-  }
-  createWeapon(x, y) {
-    const item = spawnWeapon()
-    this.placeItem(item, x, y)
-  }
-  createRing(x, y) {
-    const item = this.createItem(x, y)
-    item.type = 'ring'
   }
   createGold(x, y, amount) {
     const item = this.createItem(x, y)
@@ -451,25 +407,23 @@ class Game extends StatefulObject {
         })
       }
     }
-    if (true || location.isFloor || (possibleLocations.length === 1 && (location.isHallway || location.isDoor))) {
-      let destination = possibleLocations.find(loc => loc.moveDir === prefDir)
-      if (!destination && possibleLocations.length === 1 && (location.isHallway || location.isDoor)) {
-        destination = possibleLocations[0]
-      }
-      if (!destination) {
-        return
-      }
-      const currentVisibleItems = this.player.getCurrentVisibleItems()
-      const movedOntoItem = this.movePlayer(location, destination.location)
-      if (movedOntoItem) {
-        return
-      }
-      const newVisibility = !this.player.currentVisibilityMatches(currentVisibleItems)
-      if (newVisibility) {
-        return
-      }
-      this.runExcept(destination.moveDir.opp)
+    let destination = possibleLocations.find(loc => loc.moveDir === prefDir)
+    if (!destination && possibleLocations.length === 1 && (location.isHallway || location.isDoor)) {
+      destination = possibleLocations[0]
     }
+    if (!destination) {
+      return
+    }
+    const currentVisibleItems = this.player.getCurrentVisibleItems()
+    const movedOntoItem = this.movePlayer(location, destination.location)
+    if (movedOntoItem) {
+      return
+    }
+    const newVisibility = !this.player.currentVisibilityMatches(currentVisibleItems)
+    if (newVisibility) {
+      return
+    }
+    this.runExcept(destination.moveDir.opp)
   }
   goDownStairs() {
     const location = this.player.location
@@ -542,7 +496,8 @@ class Game extends StatefulObject {
     y = to.y
     for (let i = Math.max(x - 1, 0); i < Math.min(x + 2, this.width); i++) {
       for (let j = Math.max(y - 1, 0); j < Math.min(y + 2, this.height); j++) {
-        if (!to.isHallway || Math.abs(i - x) + Math.abs(j - y) < 2) {
+        const observedLocation = this.locations[i][j]
+        if ((!from.isHallway || !observedLocation.isWall) && (!to.isHallway || Math.abs(i - x) + Math.abs(j - y) < 2)) {
           this.locations[i][j].seen = true
           this.locations[i][j].mapped = true
           this.locations[i][j].visible = true

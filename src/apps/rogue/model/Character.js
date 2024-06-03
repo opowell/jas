@@ -1,4 +1,4 @@
-import ArmorFactory from './ArmorFactory.js'
+import { TYPES as ARMOR_TYPES, getArmor } from './ArmorFactory.js'
 import GameObject from './GameObject.js'
 import { spawnMace } from './WeaponFactory.js'
 const { computed } = Vue
@@ -27,7 +27,7 @@ class Character extends GameObject {
     mace.enchantDamage()
     mace.identify()
     this.items.push(mace)
-    const ringMail = ArmorFactory.getArmor('ring mail')
+    const ringMail = getArmor(ARMOR_TYPES.RING_MAIL, false)
     ringMail.enchant()
     ringMail.identify()
     this.items.push(ringMail)
@@ -66,7 +66,16 @@ class Character extends GameObject {
     })
   }
   takeOffArmor() {
+    if (!this.armor) {
+      this.game.addMessage('You are not wearing any armor.')
+      return
+    }
+    if (this.armor.cursed) {
+      this.game.addMessage('Cannot remove armor, it seems to be cursed.')
+      return
+    }
     this.armor = null
+    this.game.messages.push('Removed armor.')
   }
   wield(item) {
     this.weapon = item
@@ -133,15 +142,17 @@ class Character extends GameObject {
     const y = this.location.y
     const touchableLocations = []
     const game = this.game
-    touchableLocations.push(game.locations[x-1][y-1])
     touchableLocations.push(game.locations[x-1][y])
-    touchableLocations.push(game.locations[x-1][y+1])
     touchableLocations.push(game.locations[x][y-1])
     touchableLocations.push(game.locations[x][y])
     touchableLocations.push(game.locations[x][y+1])
-    touchableLocations.push(game.locations[x+1][y-1])
     touchableLocations.push(game.locations[x+1][y])
-    touchableLocations.push(game.locations[x+1][y+1])
+    if (!this.location.isHallway) {
+      touchableLocations.push(game.locations[x-1][y-1])
+      touchableLocations.push(game.locations[x-1][y+1])
+      touchableLocations.push(game.locations[x+1][y-1])
+      touchableLocations.push(game.locations[x+1][y+1])
+    }
     touchableLocations.forEach(location => {
       if (location.type === 'door') {
         out.touchable.push('door')

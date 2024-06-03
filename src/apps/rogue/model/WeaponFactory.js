@@ -19,7 +19,7 @@ const DEFINITIONS = {
   }
 }
 
-export const spawnWeapon = (weaponType) => {
+export const getWeapon = (weaponType) => {
   if (!weaponType) {
     weaponType = randomElement(DEFINITIONS, def => def.prob)
   }
