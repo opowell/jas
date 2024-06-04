@@ -4,26 +4,71 @@ import { randomElement } from "./utils.js"
 const DEFINITIONS = {
   MACE: {
     name: 'mace',
-    prob: 0.6,
-    damage: '2d4'
+    damage: '2d4',
+    throw: '1d3'
   },
   LONG_SWORD: {
     name: 'long sword',
-    prob: 0.3,
-    damage: '3d4'
+    damage: '3d4',
+    throw: '1d2'
+  },
+  SHORT_BOW: {
+    name: 'short bow',
+    damage: '1d1',
+    throw: '1d1'
+  },
+  ARROW: {
+    name: 'arrow',
+    damage: '1d1',
+    throw: '2d3',
+    isMany: true,
+    isMissile: true
+  },
+  DAGGER: {
+    name: 'dagger',
+    damage: '1d6',
+    throw: '1d4',
+    isMissile: true
   },
   TWO_HANDED_SWORD: {
     name: 'two-handed sword',
-    prob: 0.1,
-    damage: '4d4'
-  }
+    damage: '4d4',
+    throw: '1d2'
+  },
+  DART: {
+    name: 'dart',
+    damage: '1d1',
+    throw: '1d3',
+    isMany: true,
+    isMissile: true
+  },
+  CROSSBOW: {
+    name: 'crossbow',
+    damage: '1d1',
+    throw: '1d1'
+  },
+  CROSSBOW_BOLT: {
+    name: 'crossbow bolt',
+    damage: '1d2',
+    throw: '2d5',
+    isMany: true,
+    isMissile: true
+  },
+  SPEAR: {
+    name: 'spear',
+    damage: '2d3',
+    throw: '1d6',
+    isMissile: true
+  },
 }
+
+DEFINITIONS.ARROW.shooter = DEFINITIONS.SHORT_BOW
+DEFINITIONS.CROSSBOW_BOLT.shooter = DEFINITIONS.CROSSBOW
 
 export const getWeapon = (weaponType) => {
   if (!weaponType) {
     weaponType = randomElement(DEFINITIONS, def => def.prob)
   }
-  console.log('weaponType', weaponType)
   return new Weapon(weaponType)
 }
 
