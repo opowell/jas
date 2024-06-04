@@ -1,6 +1,34 @@
 import Potion from "./Potion.js"
 import { randomElement } from "./utils.js"
 
+// 96     "amber",
+// 97     "aquamarine",
+// 98     "black",
+// 99     "blue",
+// 100     "brown",
+// 101     "clear",
+// 102     "crimson",
+// 103     "cyan",
+// 104     "ecru",
+// 105     "gold",
+// 106     "green",
+// 107     "grey",
+// 108     "magenta",
+// 109     "orange",
+// 110     "pink",
+// 111     "plaid",
+// 112     "purple",
+// 113     "red",
+// 114     "silver",
+// 115     "tan",
+// 116     "tangerine",
+// 117     "topaz",
+// 118     "turquoise",
+// 119     "vermilion",
+// 120     "violet",
+// 121     "white",
+// 122     "yellow"
+
 const DEFINITIONS = {
   GAIN_STRENGTH: {
     name: 'gain strength',

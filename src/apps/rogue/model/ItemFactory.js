@@ -2,6 +2,8 @@ import { getPotion } from "./PotionFactory.js"
 import { getScroll } from "./ScrollFactory.js"
 import { getWeapon } from "./WeaponFactory.js"
 import { getArmor } from "./ArmorFactory.js"
+import { getRing } from "./RingFactory.js"
+import { getStick } from "./StickFactory.js"
 import { randomElement } from "./utils.js"
 
 const TYPES = {
@@ -26,11 +28,11 @@ const TYPES = {
     prob: 8
   },
   RING: {
-    factory: getArmor,
+    factory: getRing,
     prob: 5
   },
   STICK: {
-    factory: getArmor,
+    factory: getStick,
     prob: 5
   }
 }
