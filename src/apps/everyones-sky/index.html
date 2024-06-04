@@ -1,0 +1,91 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css" />
+    <title>Everyone's Sky</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1.01"
+    />
+  </head>
+  <body>
+    <div id="t">
+      <div id="c">
+        <div id="cc">
+          <canvas></canvas>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const scripts = [
+        "js/globals.js",
+        "js/math.js",
+        "js/canvas-additions.js",
+        "js/font.js",
+
+        "js/graphics/create-canvas.js",
+        "js/graphics/assets.js",
+        "js/graphics/particle.js",
+
+        "js/missions/mission-step.js",
+        "js/missions/tutorial-steps.js",
+        "js/missions/prompt-mission.js",
+        "js/missions/timed-mission-step.js",
+        "js/missions/attack-planet.js",
+        "js/missions/study-body.js",
+        "js/missions/collect-resources.js",
+        "js/missions/asteroids.js",
+        "js/missions/pirates.js",
+        "js/missions/reach-target.js",
+
+        "js/world/universe.js",
+        "js/world/body.js",
+        "js/world/star.js",
+        "js/world/asteroid.js",
+        "js/world/planet.js",
+        "js/world/civilization.js",
+
+        "js/ships/ship.js",
+        "js/ships/player-ship.js",
+        "js/ships/ai-ship.js",
+
+        "js/stations/planetary-station.js",
+        "js/stations/city.js",
+        "js/stations/mortar.js",
+        "js/stations/factory.js",
+
+        "js/items/item.js",
+        "js/items/resource-item.js",
+
+        "js/projectiles/laser.js",
+        "js/projectiles/simple-laser.js",
+        "js/projectiles/super-laser.js",
+
+        "js/util/resizer.js",
+        "js/util/interp.js",
+        "js/util/random-name.js",
+        "js/util/format-time.js",
+        "js/util/points-around.js",
+        "js/util/rng.js",
+        "js/util/once.js",
+
+        "js/sound/jsfxr.js",
+        "js/sound/sounds.js",
+
+        "js/event-hub.js",
+        "js/keyboard.js",
+        "js/touch.js",
+        "js/camera.js",
+        "js/game.js",
+        "js/main.js",
+      ];
+      scripts.forEach((url) => {
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = url;
+
+        document.head.appendChild(script);
+      });
+    </script>
+  </body>
+</html>
