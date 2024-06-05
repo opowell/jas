@@ -1,4 +1,5 @@
 import { TYPES as ARMOR_TYPES, getArmor } from './ArmorFactory.js'
+import { TYPES as FOOD_TYPES, getFood } from './FoodFactory.js'
 import GameObject from './GameObject.js'
 import { spawnMace } from './WeaponFactory.js'
 const { computed } = Vue
@@ -22,6 +23,8 @@ class Character extends GameObject {
       weapon: null,
       armor: null
     })
+    const ration = getFood(FOOD_TYPES.RATION)
+    this.items.push(ration)
     const mace = spawnMace()
     mace.enchantHit()
     mace.enchantDamage()

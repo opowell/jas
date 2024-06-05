@@ -15,8 +15,8 @@ function canMoveTo(location) {
   return ['floor', 'hallway', 'door'].includes(location.type)
 }
 
-const WIDTH = 60
-const HEIGHT = 30
+const WIDTH = 50
+const HEIGHT = 20
 const NUM_ROOM_COLS = 3
 const NUM_ROOM_ROWS = 2
 
@@ -65,16 +65,18 @@ class Game extends StatefulObject {
     }
   }
   addRooms() {
+    const widthPerRoomCol = Math.floor(WIDTH / NUM_ROOM_COLS)
+    const heightPerRoomRow = Math.floor(HEIGHT / NUM_ROOM_ROWS)
     this.rooms = []
     const minWidth = 4
     const minHeight = 4
     for (let i = 0; i < NUM_ROOM_COLS; i++) {
       this.rooms.push([])
-      const minX = i * 20
-      const maxX = minX + 20 - 1 - (i < 2 ? 1 : 0)
+      const minX = i * widthPerRoomCol
+      const maxX = minX + widthPerRoomCol - 1 - (i < 2 ? 1 : 0)
       for (let j = 0; j < NUM_ROOM_ROWS; j++) {
-        const minY = j * 10
-        const maxY = minY + 10 - 1 - (j < 2 ? 1 : 0)
+        const minY = j * heightPerRoomRow
+        const maxY = minY + heightPerRoomRow - 1 - (j < 2 ? 1 : 0)
         let x = randomInt(minX, maxX)
         let y = randomInt(minY, maxY)
         let goRight = Math.random() > 0.5
