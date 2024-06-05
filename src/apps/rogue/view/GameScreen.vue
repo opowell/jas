@@ -31,8 +31,8 @@
 import Location from './Location.vue'
 import Message from './Message.vue'
 const LOCATION = {
-  WIDTH: 12,
-  HEIGHT: 21
+  WIDTH: 16,
+  HEIGHT: 28
 }
 export default {
   name: 'GameScreen',
@@ -282,7 +282,7 @@ export default {
   flex: 0 0 auto;
 }
 .column1 {
-  flex: 0 0 150px;
+  flex: 0 0 210px;
   gap: 1rem;
   display: flex;
   flex-direction: column;
@@ -293,11 +293,15 @@ export default {
   flex-direction: column;
 }
 .game-screen {
+  font-size: 1.2rem;
   background-color: black;
   font-family: IBMVGA8;
   display: flex;
   gap: 2rem;
-  padding: 2rem;
+  padding: 1rem;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
 }
 @font-face {
   font-family: "IBMVGA8";

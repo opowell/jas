@@ -8,8 +8,8 @@
 </template>
 <script>
 const LOCATION = {
-  WIDTH: 12,
-  HEIGHT: 21
+  WIDTH: 16,
+  HEIGHT: 28
 }
 export default {
   name: 'GameLocation',
@@ -55,6 +55,8 @@ export default {
       }
       if (location.item && location.visible) {
         switch (location.item.type) {
+          case 'food':
+            return '&#x2663'
           case 'stick':
             return '&#x03C4;'
           case 'scroll':
@@ -133,9 +135,10 @@ export default {
             return '#5555ff'
           case 'gold':
             return '#ffff05'
-          case 'staircase': {
+          case 'food':
+            return '#ba0000'
+          case 'staircase':
             return 'black'
-          }
         }
       }
       if (location.type === 'floor') return '#00ff34'
