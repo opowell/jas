@@ -6,7 +6,6 @@ window.jap.init = () => {
       // STATE
       const curPlayerX = ref(null)
       const game = ref()
-      const tempGame = ref()
       // COMPUTED
       const lines = computed(() => {
         const out = []
@@ -31,17 +30,8 @@ window.jap.init = () => {
         return game.value[v[0][0]][v[0][1]]
       })
       // METHODS
-      const handleClick = (i,j) => {
-        if (!!winner.value) return
-        if (game.value[i][j] !== '') return
-        game.value[i][j] = curPlayerX.value ? 'X' : 'O'
-        curPlayerX.value = !curPlayerX.value
-      }
-      const handleMouseEnter = (i, j) => {
-        tempGame.value[i][j] = curPlayerX.value ? 'X' : 'O'
-      }
-      const handleMouseOut = (i, j) => {
-        tempGame.value[i][j] = ''
+      const handleClick = (i, j) => {
+        messageServer(i, j)
       }
       const startNewGame = () => {
         game.value = [
@@ -49,19 +39,10 @@ window.jap.init = () => {
           ['','',''],
           ['','','']
         ]
-        tempGame.value = [
-          ['','',''],
-          ['','',''],
-          ['','','']
-        ]
         curPlayerX.value = true
       }
       const getSpaceClasses = (space, i, j) => {
-        return {
-          used: space !== '',
-          finished: !!winningLine.value,
-          winner: isWinningSpace(i, j)
-        }
+        return { used: space !== '', finished: !!winningLine.value, winner: isWinningSpace(i, j) }
       }
       const isWinningSpace = (i, j) => {
         if (!winningLine.value) return false
@@ -71,14 +52,11 @@ window.jap.init = () => {
       startNewGame()
       const out = {
         game,
-        tempGame,
         winningLine,
         getSpaceClasses,
         handleClick,
         startNewGame,
-        winner,
-        handleMouseEnter,
-        handleMouseOut
+        winner
       }
       Object.keys(out).forEach(key => {
         window.jap[key] = out[key]
@@ -86,4 +64,8 @@ window.jap.init = () => {
       return out
     }
   }).mount('#app')
+}
+
+messageServer = function (payload) {
+  
 }
