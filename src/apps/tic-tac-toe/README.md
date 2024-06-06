@@ -1,1 +1,1 @@
-- Refactor to server-client - multiplayer, and client only knows what it needs to know.
+- Refactor to server-client multiplayer, and client only knows what it needs to know.
