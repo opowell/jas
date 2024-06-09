@@ -15,4 +15,8 @@ Node.js
 - server - files for server
 
 # Apps
-- index.html required in root folder.
+- create app folder in /apps.
+- index.html required in app folder.
+
+## Downloadable apps
+- Tic Tac Toe
