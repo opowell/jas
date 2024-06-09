@@ -1,3 +1,0 @@
-.pre-run-window > *:not(:first-child) {
-  display: none;
-}
