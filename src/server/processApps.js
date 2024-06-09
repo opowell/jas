@@ -9,6 +9,7 @@ const getApps = (appsPath) => {
 }
 
 const processApps = (expressApp, appsPath) => {
+  console.log('loading apps: ' + appsPath)
   const apps = getApps(appsPath)
   apps.forEach(dir => {
     const appFolder = path.join(appsPath, dir)
@@ -16,6 +17,7 @@ const processApps = (expressApp, appsPath) => {
     expressApp.get('/' + dir, (req, res) => {
       res.sendFile(path.join(appFolder, 'index.html'))
     })
+    console.log('loading app: ' + dir)
   })
 }
 

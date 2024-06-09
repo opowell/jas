@@ -16,6 +16,8 @@ const httpServer = createServer(expressApp)
 
 expressApp.use('/', express.static('apps/' + importedSettings.defaultApp))
 
+const builtInAppsPath = path.join(serverPath, 'built-in-apps')
+processApps(expressApp, builtInAppsPath)
 const appsPath = path.join(serverPath, 'apps')
 processApps(expressApp, appsPath)
 
