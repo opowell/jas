@@ -20,3 +20,4 @@ Node.js
 
 ## Downloadable apps
 - Tic Tac Toe
+- Rogue
