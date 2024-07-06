@@ -17,7 +17,7 @@ const processApps = (expressApp, appsPath) => {
     expressApp.get('/' + dir, (req, res) => {
       res.sendFile(path.join(appFolder, 'index.html'))
     })
-    console.log('loading app: ' + dir)
+    console.log('loading app: ' + dir, appFolder)
   })
 }
 
