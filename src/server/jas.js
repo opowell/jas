@@ -9,7 +9,6 @@ import ip from 'ip'
 const serverPath = getServerPath()
 const importedSettingsPath = path.join(serverPath, '/server/settings.json')
 const importedSettings = JSON.parse(readFileSync(importedSettingsPath, 'utf8'))
-console.log(serverPath, importedSettingsPath, importedSettings)
 const expressApp = express()
 const port = importedSettings.port || 3000
 const httpServer = createServer(expressApp)
