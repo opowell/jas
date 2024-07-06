@@ -9,12 +9,16 @@ import ip from 'ip'
 const serverPath = getServerPath()
 const importedSettingsPath = path.join(serverPath, '/server/settings.json')
 const importedSettings = JSON.parse(readFileSync(importedSettingsPath, 'utf8'))
-
+console.log(serverPath, importedSettingsPath, importedSettings)
 const expressApp = express()
 const port = importedSettings.port || 3000
 const httpServer = createServer(expressApp)
 
-expressApp.use('/', express.static('apps/' + importedSettings.defaultApp))
+const defaultAppPath = path.join(serverPath, 'built-in-apps', importedSettings.defaultApp)
+expressApp.use('/', express.static(defaultAppPath))
+expressApp.get('/', (req, res) => {
+  res.sendFile(path.join(defaultAppPath, 'index.html'))
+})
 
 const builtInAppsPath = path.join(serverPath, 'built-in-apps')
 processApps(expressApp, builtInAppsPath)
