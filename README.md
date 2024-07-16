@@ -8,6 +8,11 @@ A javascript app server.
 4. Execute `../node/v20.15.0-darwin-x64/bin/node ./server/jas.js`
 - If necessary, download Node.js for your system and modify the path.
 
+# Start on startup
+1. Use `install.sh` to copy `localhost.jas.plist` to `LaunchAgents` folder.
+   1. Note: server cannot be located in a "Restricted" MacOS folder (Documents, Desktop, etc.)
+   2. `jas.sh` must be executable by the current user.
+
 # Files
 - apps - files for apps
 - server - files for server
