@@ -1,5 +1,5 @@
 #!/bin/sh -e
-plist_path="localhost.jas.plist"
+plist_path="./server/localhost.jas.plist"
 plist_filename=$(basename "$plist_path")
 install_path="/Users/op/Library/LaunchAgents/$plist_filename"
 
@@ -8,7 +8,6 @@ cp -f "$plist_path" "$install_path"
 # sudo chown op "$install_path"
 # sudo chmod 644 "$install_path"
 
-launchctl unload "$install_path"
 launchctl load "$install_path"
 
 echo "to check if it's running, run this command: sudo launchctl list | grep jas"

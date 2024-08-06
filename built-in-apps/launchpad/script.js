@@ -1,3 +1,8 @@
+async function refreshApps() {
+  const apiUrl = 'http://' + window.location.host + '/refresh'
+  const response = await fetch(apiUrl)
+  console.log(response)
+}
 async function getApps() {
   const apiUrl = 'http://' + window.location.host + '/apps'
   return fetch(apiUrl)
@@ -47,7 +52,8 @@ window.launchpad.init = () => {
         }
         const out = {
           apps,
-          handleAppClick
+          handleAppClick,
+          refreshApps
         }
         Object.keys(out).forEach(key => {
           window.launchpad[key] = out[key]

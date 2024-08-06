@@ -10,7 +10,7 @@ A javascript app server.
 
 # Start on startup
 1. Use `install.sh` to copy `localhost.jas.plist` to `LaunchAgents` folder.
-   1. Note: server cannot be located in a "Restricted" MacOS folder (Documents, Desktop, etc.)
+   1. Note: server cannot be located in a "Restricted" MacOS folder (`Documents`, `Desktop`, etc.)
    2. `jas.sh` must be executable by the current user.
 
 # Files
@@ -23,4 +23,4 @@ A javascript app server.
 
 ## Downloadable apps
 - Tic Tac Toe
-- Rogue
+- Rogue (https://github.com/opowell/rogue2)
