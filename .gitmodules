@@ -1,3 +1,6 @@
 [submodule "src/apps/rogue2"]
 	path = src/apps/rogue2
 	url = https://github.com/opowell/rogue2
+[submodule "apps/rogue2"]
+	path = apps/rogue2
+	url = https://github.com/opowell/rogue2
