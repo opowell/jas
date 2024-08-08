@@ -32,6 +32,7 @@ export const setupRouter = () => {
     res.json(getApps(appsPath))
   })
   router.get('/refresh', (req, res) => {
+    console.log('refresh')
     setupRouter()
     res.text('Apps refreshed.')
   })
