@@ -1,0 +1,1 @@
+- generate plist file dynamically (use current location of install.sh).
