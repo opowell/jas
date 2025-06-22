@@ -3,14 +3,14 @@
 <plist version="1.0">
     <dict>
         <key>Label</key>
-        <string>localhost.jas</string>
+        <string>localhost.jas.plist</string>
         <key>Program</key>
-        <string>/Users/op/repos/jtree3/jas.sh</string>
+        <string>/Users/op/repos/jas/jtree3/jas.sh</string>
         <key>RunAtLoad</key>
         <true/>
         <key>StandardOutPath</key>
-        <string>/Users/op/repos/jtree3/logs/log.txt</string>
+        <string>/Users/op/repos/jas/jtree3/logs/log.txt</string>
         <key>StandardErrorPath</key>
-        <string>/Users/op/repos/jtree3/logs/error.txt</string>
+        <string>/Users/op/repos/jas/jtree3/logs/error.txt</string>
     </dict>
 </plist>
