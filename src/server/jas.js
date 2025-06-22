@@ -25,6 +25,7 @@ const appsPath = path.join(serverPath, 'apps')
 processApps(expressApp, appsPath)
 
 expressApp.get('/apps', (req, res) => {
+  processApps(expressApp, appsPath)
   res.json(getApps(appsPath))
 })
 
