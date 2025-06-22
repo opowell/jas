@@ -1,7 +1,9 @@
 <template>
   <div class="app">
-    <div class="app-icon">{{ app[0].toUpperCase() }}</div>
-    <div class="app-name">{{ app }}</div>
+    <div class="app-icon">
+      <img v-if="app.previewImage" :src="app.id + '/' + app.previewImage">
+      <span v-else>{{ app.id[0].toUpperCase() }}</span></div>
+    <div class="app-name">{{ app.id }}</div>
   </div>
 </template>
 <script>
@@ -26,11 +28,11 @@ const inv = (hex) => '#' + hex.match(/[a-f0-9]{2}/ig).map(e => (255 - parseInt(e
 export default {
   name: 'LaunchpadApp',
   props: {
-    app: { type: String, required: true }
+    app: { type: Object, required: true }
   },
   computed: {
     bgColor() {
-      return hashStringToColor(this.app)
+      return hashStringToColor(this.app.id)
     },
     color() {
       if (!this.bgColor) {
@@ -66,6 +68,11 @@ export default {
   justify-content: center;
   font-size: 5rem;
   opacity: 1;
+  padding: 0.5rem;
+}
+.app-icon > img {
+  max-width: 100%;
+  max-height: 100%;
 }
 .app-name {
   color: white;
