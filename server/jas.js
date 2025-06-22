@@ -13,13 +13,13 @@ const expressApp = express()
 const port = importedSettings.port || 3000
 const httpServer = createServer(expressApp)
 
-const defaultAppPath = path.join(serverPath, 'built-in-apps', importedSettings.defaultApp)
+const defaultAppPath = path.join(serverPath, 'server/built-in-apps', importedSettings.defaultApp)
 expressApp.use('/', express.static(defaultAppPath))
 expressApp.get('/', (req, res) => {
   res.sendFile(path.join(defaultAppPath, 'index.html'))
 })
 
-const builtInAppsPath = path.join(serverPath, 'built-in-apps')
+const builtInAppsPath = path.join(serverPath, 'server/built-in-apps')
 processApps(expressApp, builtInAppsPath)
 const appsPath = path.join(serverPath, 'apps')
 processApps(expressApp, appsPath)
@@ -31,5 +31,5 @@ expressApp.get('/apps', (req, res) => {
 
 const url = ip.address()
 httpServer.listen(port, () => {
-  console.log(`JAS - http://${url}:${port}`)
+  console.log(`Start page: http://${url}:${port}`)
 })

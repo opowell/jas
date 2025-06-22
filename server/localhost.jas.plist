@@ -9,8 +9,8 @@
         <key>RunAtLoad</key>
         <true/>
         <key>StandardOutPath</key>
-        <string>/Users/op/repos/jas/jtree3/logs/log.txt</string>
+        <string>/Users/op/repos/jas/jtree3/server/logs/log.txt</string>
         <key>StandardErrorPath</key>
-        <string>/Users/op/repos/jas/jtree3/logs/error.txt</string>
+        <string>/Users/op/repos/jas/jtree3/server/logs/error.txt</string>
     </dict>
 </plist>

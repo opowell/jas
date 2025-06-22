@@ -1,5 +1,4 @@
 #!/bin/bash
-echo 'Starting!!'
+echo 'JAS -- Javascript App Server -- starting'
 cd "$( dirname -- "$( readlink -f -- "$0"; )"; )"
-cd ./src
-./../node/v20.15.0-darwin-x64/bin/node ./server/jas.js
+./server/node/v20.15.0-darwin-x64/bin/node ./server/jas.js
