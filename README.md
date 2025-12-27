@@ -22,4 +22,4 @@ A javascript app server.
 
 ## Downloadable apps
 - Tic Tac Toe
-- Rogue
+- [Rogue](https://github.com/opowell/rogue2)
