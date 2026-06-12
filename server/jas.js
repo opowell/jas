@@ -3,10 +3,22 @@ import path from 'path'
 import { getApps, processApps, createAppsRouter } from './processApps.js'
 import { getServerPath } from './getServerPath.js'
 import { createServer } from 'node:http'
-import { readFileSync } from 'fs'
+import { readFileSync, mkdirSync, createWriteStream } from 'fs'
 import ip from 'ip'
 
 const serverPath = getServerPath()
+
+const logsDir = path.join(serverPath, 'logs')
+mkdirSync(logsDir, { recursive: true })
+const logTimestamp = new Date().toISOString().replace(/[:.]/g, '-')
+const logStream = createWriteStream(path.join(logsDir, `server-${logTimestamp}.log`))
+logStream.write(`Server started at ${new Date().toISOString()}\n\n`)
+
+const origLog = console.log.bind(console)
+const origError = console.error.bind(console)
+console.log = (...args) => { origLog(...args); logStream.write(args.join(' ') + '\n') }
+console.error = (...args) => { origError(...args); logStream.write('[ERROR] ' + args.join(' ') + '\n') }
+
 const importedSettingsPath = path.join(serverPath, '/server/settings.json')
 const importedSettings = JSON.parse(readFileSync(importedSettingsPath, 'utf8'))
 const expressApp = express()
