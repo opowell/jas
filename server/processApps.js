@@ -22,10 +22,14 @@ const getApps = (appsPath) => {
 const loadServerProcess = async (router, app, appFolder) => {
   const serverFile = path.join(appFolder, 'server.js')
   if (!fs.existsSync(serverFile)) return
-  const mod = await import(pathToFileURL(serverFile).href)
-  if (typeof mod.default === 'function') {
-    mod.default(router, app)
-    console.log('loaded server process: ' + app.id)
+  try {
+    const mod = await import(pathToFileURL(serverFile).href)
+    if (typeof mod.default === 'function') {
+      mod.default(router, app)
+      console.log('loaded server process: ' + app.id)
+    }
+  } catch (err) {
+    console.error('failed to load server process for ' + app.id + ':', err)
   }
 }
 
