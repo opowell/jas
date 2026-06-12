@@ -3,6 +3,7 @@ echo 'JAS - installing...'
 plist_filename="localhost.jas.plist"
 install_path="/Users/$USER/Library/LaunchAgents/$plist_filename"
 
+mkdir -p server/logs
 rm -f "server/$plist_filename"
 cp "server/template-$plist_filename" "server/$plist_filename"
 sed -i '' "s|JAS_HOME|$PWD|g" "server/localhost.jas.plist"

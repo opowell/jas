@@ -1,25 +1,17 @@
-# JAS
-A javascript app server.
+# JAS — Javascript App Server
 
-# Quick start
-1. Download project for your platform.
-2. Unzip.
-3. Open terminal in `/src` folder.
-4. Execute `jas.sh`
-   1. `jas.sh` must be executable by the current user.
+A lightweight local server that hosts web apps. Open a browser and use the Launchpad to launch any app in your `apps/` folder.
 
-# Start on startup
-1. Use `install.sh` to copy `localhost.jas.plist` to `LaunchAgents` folder.
-   1. Note: server cannot be located in a "Restricted" MacOS folder (Documents, Desktop, etc.)
+## Quick start
 
-# Files
-- apps - files for apps
-- server - files for server
+```sh
+./jas.sh
+```
 
-# Apps
-- create app folder in /apps.
-- index.html required in app folder.
+Then open the URL printed in the terminal (e.g. `http://192.168.1.x:3000`).
 
-## Downloadable apps
-- Tic Tac Toe
-- [Rogue](https://github.com/opowell/rogue2)
+## Documentation
+
+- [Installation](docs/installation.md) — prerequisites, running manually, auto-start on login, uninstall
+- [Creating apps](docs/creating-apps.md) — folder structure, preview images, hot reload
+- [Server processes](docs/server-processes.md) — adding Express routes and server-side state via `server.js`

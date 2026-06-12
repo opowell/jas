@@ -1,3 +1,5 @@
 **/.DS_Store
 /apps
 logs
+/server/apps
+jas-repo.code-workspace

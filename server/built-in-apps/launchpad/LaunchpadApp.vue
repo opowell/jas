@@ -17,10 +17,10 @@ function djb2(str) {
 
 function hashStringToColor(str) {
   const hash = djb2(str)
-  const g = (hash & 0xFF0000) >> 16
-  const b = (hash & 0x00FF00) >> 8
-  const r = hash & 0x0000FF
-  return "#" + ("0" + r.toString(16)).substr(-2) + ("0" + g.toString(16)).substr(-2) + ("0" + b.toString(16)).substr(-2)
+  const r = (hash & 0xFF0000) >> 16
+  const g = (hash & 0x00FF00) >> 8
+  const b = hash & 0x0000FF
+  return "#" + ("0" + r.toString(16)).slice(-2) + ("0" + g.toString(16)).slice(-2) + ("0" + b.toString(16)).slice(-2)
 }
 
 const inv = (hex) => '#' + hex.match(/[a-f0-9]{2}/ig).map(e => (255 - parseInt(e, 16) | 0).toString(16).replace(/^([a-f0-9])$/, '0$1')).join('')
