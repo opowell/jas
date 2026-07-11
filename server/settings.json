@@ -1,3 +1,4 @@
 {
-  "defaultApp": "launchpad"
+  "defaultApp": "launchpad",
+  "port": 4500
 }
