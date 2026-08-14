@@ -6,19 +6,32 @@ installed: each platform archive carries its own Node runtime under
 
 ## Cutting a release
 
-1. Bump `version` in [package.json](../package.json).
-2. Commit it.
-3. Tag and push:
+```sh
+./scripts/release.sh patch      # 1.0.0 -> 1.0.1
+./scripts/release.sh minor      # 1.0.0 -> 1.1.0
+./scripts/release.sh major      # 1.0.0 -> 2.0.0
+./scripts/release.sh 1.4.2      # an explicit version
+```
 
-   ```sh
-   git tag v1.1.0
-   git push origin main --tags
-   ```
+The script bumps `package.json` and `package-lock.json`, commits, tags `vX.Y.Z`,
+and pushes the branch and tag together. Pushing the tag is what starts the
+[release workflow](../.github/workflows/release.yml), which builds every archive
+and publishes them to a GitHub release. It then prints the Actions URL, and
+follows the run if the [GitHub CLI](https://cli.github.com) is installed.
 
-The [release workflow](../.github/workflows/release.yml) then checks the tag
-matches `package.json`, builds every archive, and publishes them to a GitHub
-release for that tag. Pushing a tag whose version disagrees with
-`package.json` fails the build rather than publishing mislabelled archives.
+Add `--dry-run` to run every check and print the plan without changing
+anything.
+
+Before touching the repository it refuses to continue if you are not on `main`,
+the working tree is dirty, `main` has diverged from origin, or the tag already
+exists locally or on origin. When `package.json` already holds the requested
+version — as it does for the very first release — it tags the current commit
+instead of making an empty bump.
+
+Doing it by hand is the same three steps: set the version in
+[package.json](../package.json), commit, then `git tag v1.1.0` and
+`git push origin main --follow-tags`. The workflow checks the tag matches
+`package.json` and fails rather than publishing mislabelled archives.
 
 Running the workflow manually (`workflow_dispatch`) builds the archives and
 attaches them as workflow artifacts without creating a release — useful for

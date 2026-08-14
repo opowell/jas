@@ -9,6 +9,7 @@
   "main": "server/jas.js",
   "scripts": {
     "start": "node server/jas.js",
+    "release": "sh scripts/release.sh",
     "build-release": "node scripts/build-release.mjs"
   },
   "engines": {
