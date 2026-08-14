@@ -12,9 +12,24 @@ const listFolders = (appsPath) => {
   return fs.readdirSync(appsPath).filter(isFolder)
 }
 
+// A folder is an app if it has its own root index.html, or if its
+// settings.json explicitly declares client pages elsewhere (e.g. nested
+// under an "apps" subfolder).
+const isApp = (appsPath, fileName) => {
+  const appFolder = path.join(appsPath, fileName)
+  if (fs.existsSync(path.join(appFolder, 'index.html'))) return true
+  const settingsFile = path.join(appFolder, 'settings.json')
+  if (!fs.existsSync(settingsFile)) return false
+  try {
+    const settings = JSON.parse(fs.readFileSync(settingsFile, 'utf8'))
+    return settings.clients !== undefined
+  } catch {
+    return false
+  }
+}
+
 const getApps = (appsPath) => {
-  const isApp = fileName => fs.existsSync(path.join(appsPath, fileName, 'index.html'))
-  const appFolders = listFolders(appsPath).filter(isApp)
+  const appFolders = listFolders(appsPath).filter(f => isApp(appsPath, f))
   return appFolders.map(f => {
     const out = {
       id: f
@@ -50,16 +65,23 @@ const getAppSettings = (appFolder) => {
   return {
     clients: normalizePaths(settings.clients, DEFAULT_CLIENTS),
     servers: normalizePaths(settings.servers, DEFAULT_SERVERS),
+    // Set to false when a server module (see loadServerProcesses) fully owns its
+    // own static/file serving and the app's raw source tree should not also be
+    // exposed wholesale as static files (e.g. it contains non-public data dirs).
+    serveStatic: settings.static !== false,
     sharedApps: Array.isArray(settings.sharedApps) ? settings.sharedApps : []
   }
 }
 
 // Turns a client file path (e.g. "./admin.html") into the URL segment it's
 // served at under the app's route (e.g. "/admin"). "./index.html" maps to
-// the app's root route.
+// the app's root route. A nested "./index.html" (e.g. "./apps/design/index.html")
+// uses its parent folder's name instead, so sibling index.html files don't collide.
 const clientRoute = (clientPath) => {
   const name = path.basename(clientPath, path.extname(clientPath))
-  return name === 'index' ? '' : '/' + name
+  if (name !== 'index') return '/' + name
+  const dirName = path.basename(path.dirname(clientPath))
+  return dirName === '.' ? '' : '/' + dirName
 }
 
 // Recursively finds every index.html under dirAbs, returning each one's
@@ -108,14 +130,17 @@ const registerClients = (router, app, appFolder, clients) => {
   }
 }
 
-const loadServerProcesses = async (router, app, appFolder, servers) => {
+// httpServer is passed through so an app's server module can register its own
+// WebSocket 'upgrade' handling (scoped to its own route prefix) on the shared
+// server, since Express routers have no concept of upgrade requests.
+const loadServerProcesses = async (router, app, appFolder, servers, httpServer) => {
   for (const serverPath of servers) {
     const serverFile = path.join(appFolder, serverPath)
     if (!fs.existsSync(serverFile)) continue
     try {
       const mod = await import(pathToFileURL(serverFile).href)
       if (typeof mod.default === 'function') {
-        mod.default(router, app)
+        mod.default(router, app, httpServer)
         console.log('loaded server process: ' + app.id + ' (' + serverPath + ')')
       }
     } catch (err) {
@@ -146,31 +171,31 @@ const registerLibraryFolderStatics = (router, appsPath, appIds) => {
   }
 }
 
-const processApps = async (expressApp, appsPath) => {
+const processApps = async (expressApp, appsPath, httpServer) => {
   console.log('loading apps: ' + appsPath)
   const apps = getApps(appsPath)
   registerLibraryFolderStatics(expressApp, appsPath, new Set(apps.map(a => a.id)))
   for (const app of apps) {
     const appFolder = path.join(appsPath, app.id)
-    const { clients, servers, sharedApps } = getAppSettings(appFolder)
-    registerStatic(expressApp, app, appFolder, appsPath, sharedApps)
+    const { clients, servers, sharedApps, serveStatic } = getAppSettings(appFolder)
+    if (serveStatic) registerStatic(expressApp, app, appFolder, appsPath, sharedApps)
     registerClients(expressApp, app, appFolder, clients)
-    await loadServerProcesses(expressApp, app, appFolder, servers)
+    await loadServerProcesses(expressApp, app, appFolder, servers, httpServer)
     console.log('loaded app: ' + app.id, appFolder)
   }
 }
 
-const createAppsRouter = async (appsPath) => {
+const createAppsRouter = async (appsPath, httpServer) => {
   const router = express.Router()
   console.log('loading apps: ' + appsPath)
   const apps = getApps(appsPath)
   registerLibraryFolderStatics(router, appsPath, new Set(apps.map(a => a.id)))
   for (const app of apps) {
     const appFolder = path.join(appsPath, app.id)
-    const { clients, servers, sharedApps } = getAppSettings(appFolder)
-    registerStatic(router, app, appFolder, appsPath, sharedApps)
+    const { clients, servers, sharedApps, serveStatic } = getAppSettings(appFolder)
+    if (serveStatic) registerStatic(router, app, appFolder, appsPath, sharedApps)
     registerClients(router, app, appFolder, clients)
-    await loadServerProcesses(router, app, appFolder, servers)
+    await loadServerProcesses(router, app, appFolder, servers, httpServer)
     console.log('loaded app: ' + app.id, appFolder)
   }
   return router

@@ -1,0 +1,20 @@
+{
+  "name": "jas",
+  "version": "1.0.0",
+  "description": "JAS — Javascript App Server. A lightweight local server that hosts web apps.",
+  "author": "opowell <opowell@gmail.com>",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "main": "server/jas.js",
+  "scripts": {
+    "start": "node server/jas.js",
+    "build-release": "node scripts/build-release.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

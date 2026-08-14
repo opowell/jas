@@ -1,0 +1,63 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # The archive names come from package.json, so a mismatch would publish
+      # a v1.2.0 tag containing jas-1.1.0 archives.
+      - name: Check tag matches package.json version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(node -p "require('./package.json').version")"
+          if [ "$tag" != "$version" ]; then
+            echo "tag $GITHUB_REF_NAME does not match package.json version $version" >&2
+            exit 1
+          fi
+
+      - name: Build release archives
+        run: node scripts/build-release.mjs
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "JAS $GITHUB_REF_NAME" \
+            --notes-file - <<'NOTES'
+          Download an archive for your platform, unzip it, and run `jas.sh` (macOS/Linux) or `jas.cmd` (Windows).
+
+          | Archive | For |
+          | --- | --- |
+          | `*-portable.zip` | any platform, uses the Node.js already installed on the machine (v20+) |
+          | `*-darwin-arm64.tar.gz` | macOS, Apple Silicon — Node.js included |
+          | `*-darwin-x64.tar.gz` | macOS, Intel — Node.js included |
+          | `*-linux-x64.tar.gz` | Linux, x86-64 — Node.js included |
+          | `*-linux-arm64.tar.gz` | Linux, ARM64 (e.g. Raspberry Pi 64-bit) — Node.js included |
+          | `*-win-x64.zip` | Windows, x86-64 — Node.js included |
+          NOTES
+          gh release upload "$GITHUB_REF_NAME" dist/*.zip dist/*.tar.gz
+
+      - name: Upload archives as build artifacts
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: jas-release-archives
+          path: dist/*

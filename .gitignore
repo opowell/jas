@@ -3,3 +3,10 @@
 logs
 /server/apps
 jas-repo.code-workspace
+
+# Node runtimes are added per-platform by the release build, never committed.
+/server/node
+/dist
+
+# Generated from server/template-* by install.sh
+/server/localhost.jas.plist

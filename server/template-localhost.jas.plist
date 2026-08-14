@@ -8,6 +8,11 @@
         <string>JAS_HOME/jas.sh</string>
         <key>RunAtLoad</key>
         <true/>
+        <key>EnvironmentVariables</key>
+        <dict>
+            <key>JAS_NODE</key>
+            <string>JAS_NODE_PATH</string>
+        </dict>
         <key>StandardOutPath</key>
         <string>JAS_HOME/server/logs/log.txt</string>
         <key>StandardErrorPath</key>

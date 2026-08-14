@@ -1,0 +1,16 @@
+[Unit]
+Description=JAS -- Javascript App Server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=JAS_HOME/jas.sh
+WorkingDirectory=JAS_HOME
+Environment=JAS_NODE=JAS_NODE_PATH
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:JAS_HOME/server/logs/log.txt
+StandardError=append:JAS_HOME/server/logs/error.txt
+
+[Install]
+WantedBy=default.target
