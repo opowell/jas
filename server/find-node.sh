@@ -40,6 +40,21 @@ if [ -z "$node_bin" ] && command -v node > /dev/null 2>&1; then
   node_bin=$(command -v node)
 fi
 
+# Last resort: any bundled runtime that actually runs, whatever its folder is
+# named. `uname -m` reports the architecture of the *calling* process, not the
+# machine — launched from a translated (Rosetta) parent on an Apple Silicon Mac
+# it says x86_64, and the arm64 bundle sitting right there would be skipped.
+# Trying the binary is the only reliable test of whether it can run here.
+if [ -z "$node_bin" ]; then
+  for dir in "$JAS_DIR"/server/node/*; do
+    if [ -x "$dir/bin/node" ] && "$dir/bin/node" -v > /dev/null 2>&1; then
+      node_bin="$dir/bin/node"
+      npm_bin="$dir/bin/npm"
+      break
+    fi
+  done
+fi
+
 jas_no_node_message() {
   echo "JAS: no Node.js runtime found." >&2
   echo "Install Node.js $REQUIRED_NODE_MAJOR or later (https://nodejs.org), or download a" >&2

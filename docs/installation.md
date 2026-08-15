@@ -71,11 +71,18 @@ The port comes from `"port"` in [server/settings.json](../server/settings.json).
 
 The launchers pick the first of:
 
-1. a runtime bundled under `server/node/<version>-<platform>-<arch>` (how the
-   platform release archives ship Node)
+1. a runtime bundled under `server/node/<version>-<platform>-<arch>` matching
+   this machine (how the platform release archives ship Node)
 2. `$JAS_NODE` / `%JAS_NODE%`, if set — point it at a `node` executable to
    override everything else
 3. `node` on `PATH`
+4. any bundled runtime that runs, whatever its folder is named
+
+Step 4 exists because `uname -m` reports the architecture of the process asking,
+not of the machine: started from a translated (Rosetta) parent on an Apple
+Silicon Mac it answers `x86_64`, and step 1 would then walk straight past the
+`arm64` runtime sitting in the archive. Rather than trust the label, the
+launcher runs the binary and keeps the first one that works.
 
 If none of those exist, or the version found is older than 20, the launcher says
 so and stops.

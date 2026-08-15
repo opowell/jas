@@ -21,18 +21,21 @@ if /i "%PROCESSOR_ARCHITECTURE%"=="ARM64" set "ARCH=arm64"
 
 set "NODE_BIN="
 set "NPM_BIN=npm"
-for /d %%D in ("%JAS_HOME%\server\node\*-win-%ARCH%") do (
-  if not defined NODE_BIN if exist "%%~fD\node.exe" (
-    set "NODE_BIN=%%~fD\node.exe"
-    set "NPM_BIN=%%~fD\npm.cmd"
-  )
-)
+for /d %%D in ("%JAS_HOME%\server\node\*-win-%ARCH%") do call :try_node "%%~fD"
 
 if not defined NODE_BIN if defined JAS_NODE set "NODE_BIN=%JAS_NODE%"
 if not defined NODE_BIN (
   for /f "delims=" %%N in ('where node 2^>nul') do (
     if not defined NODE_BIN set "NODE_BIN=%%~fN"
   )
+)
+
+rem Last resort: any bundled runtime that actually runs, whatever its folder is
+rem named. PROCESSOR_ARCHITECTURE reports the architecture of the current
+rem process, so a 32-bit shell says x86, and an ARM64 machine that can also run
+rem x64 builds would skip a usable bundle. Trying the binary settles it.
+if not defined NODE_BIN (
+  for /d %%D in ("%JAS_HOME%\server\node\*") do call :try_node "%%~fD"
 )
 if not defined NODE_BIN (
   echo JAS: no Node.js runtime found. 1>&2
@@ -66,3 +69,13 @@ exit /b %errorlevel%
 rem Keep the window open long enough to read the error when double-clicked.
 echo %cmdcmdline% | find /i "%~nx0" > nul && pause
 exit /b 1
+
+rem Accepts a bundled Node folder and takes it if it holds a node.exe that runs.
+rem First one wins, so callers may pass several.
+:try_node
+if defined NODE_BIN exit /b 0
+if not exist "%~1\node.exe" exit /b 0
+"%~1\node.exe" -v > nul 2>&1 || exit /b 0
+set "NODE_BIN=%~1\node.exe"
+set "NPM_BIN=%~1\npm.cmd"
+exit /b 0
