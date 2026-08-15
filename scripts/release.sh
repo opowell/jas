@@ -128,7 +128,30 @@ echo "  https://github.com/$slug/releases/tag/$tag"
 
 if command -v gh > /dev/null 2>&1; then
   echo
-  echo "- watching the workflow (Ctrl-C to stop; the build continues regardless)"
-  sleep 5
-  gh run watch --exit-status || echo "- the run did not succeed; see the Actions page above"
+  echo "- waiting for the workflow run to appear"
+
+  # `gh run watch` prompts for a run when given none, which fails outright with
+  # no terminal to prompt at, so the run is looked up by tag. It takes a few
+  # seconds for GitHub to register it after the push.
+  run_id=
+  attempt=1
+  while [ $attempt -le 12 ]; do
+    run_id=$(gh run list --workflow release.yml --branch "$tag" --limit 1 --json databaseId --jq '.[0].databaseId' 2> /dev/null || true)
+    [ -n "$run_id" ] && break
+    sleep 5
+    attempt=$((attempt + 1))
+  done
+
+  if [ -z "$run_id" ]; then
+    echo "- the run has not appeared yet; follow it on the Actions page above"
+  else
+    echo "- watching run $run_id (Ctrl-C to stop; the build continues regardless)"
+    if gh run watch "$run_id" --exit-status --compact; then
+      echo
+      echo "Released: https://github.com/$slug/releases/tag/$tag"
+    else
+      echo "- the run did not succeed: https://github.com/$slug/actions/runs/$run_id" >&2
+      exit 1
+    fi
+  fi
 fi
