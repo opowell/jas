@@ -1,6 +1,6 @@
 {
   "name": "jas",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JAS — Javascript App Server. A lightweight local server that hosts web apps.",
   "author": "opowell <opowell@gmail.com>",
   "license": "MIT",
