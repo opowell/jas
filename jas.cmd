@@ -8,7 +8,7 @@ rem   3. the `node` on PATH
 rem Then installs dependencies if they are missing, and starts the server.
 setlocal
 
-set "REQUIRED_NODE_MAJOR=20"
+set "REQUIRED_NODE_MAJOR=22"
 
 set "JAS_HOME=%~dp0"
 if "%JAS_HOME:~-1%"=="\" set "JAS_HOME=%JAS_HOME:~0,-1%"

@@ -1,10 +1,9 @@
 @echo off
 rem Registers JAS to start automatically at logon, as a scheduled task.
-rem Run uninstall.cmd to undo.
+rem Run scripts\uninstall.cmd to undo.
 setlocal
 
-set "JAS_DIR=%~dp0"
-if "%JAS_DIR:~-1%"=="\" set "JAS_DIR=%JAS_DIR:~0,-1%"
+for %%D in ("%~dp0..") do set "JAS_DIR=%%~fD"
 
 set "TASK_NAME=JAS"
 

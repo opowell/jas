@@ -8,5 +8,5 @@ jas-repo.code-workspace
 /server/node
 /dist
 
-# Generated from server/template-* by install.sh
+# Generated from server/template-* by scripts/install.sh
 /server/localhost.jas.plist

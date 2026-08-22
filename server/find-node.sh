@@ -1,4 +1,4 @@
-# Shared Node.js lookup for jas.sh and install.sh, on macOS and Linux.
+# Shared Node.js lookup for jas.sh and scripts/install.sh, on macOS and Linux.
 # Sourced, not executed. Expects $JAS_DIR (the project root) to be set, and
 # sets node_bin and npm_bin, leaving node_bin empty when nothing suitable is
 # found. Order of preference:
@@ -6,7 +6,7 @@
 #   2. $JAS_NODE, if set
 #   3. the `node` on PATH
 
-REQUIRED_NODE_MAJOR=20
+REQUIRED_NODE_MAJOR=22
 
 case $(uname -s) in
   Darwin) jas_platform=darwin ;;

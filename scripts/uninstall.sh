@@ -3,7 +3,7 @@
 # left untouched.
 set -e
 
-JAS_DIR=$(cd "$(dirname "$0")" && pwd)
+JAS_DIR=$(cd "$(dirname "$0")/.." && pwd)
 cd "$JAS_DIR"
 
 case $(uname -s) in
@@ -35,9 +35,9 @@ case $(uname -s) in
     ;;
 
   *)
-    echo "JAS: nothing to uninstall on $(uname -s). On Windows, run uninstall.cmd." >&2
+    echo "JAS: nothing to uninstall on $(uname -s). On Windows, run scripts\\uninstall.cmd." >&2
     exit 1
     ;;
 esac
 
-echo "to install it again, run './install.sh'"
+echo "to install it again, run './scripts/install.sh'"

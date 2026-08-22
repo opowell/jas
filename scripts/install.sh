@@ -1,9 +1,9 @@
 #!/bin/sh
 # Registers JAS to start automatically on login: a launchd agent on macOS,
-# a systemd user service on Linux. Run ./uninstall.sh to undo.
+# a systemd user service on Linux. Run ./scripts/uninstall.sh to undo.
 set -e
 
-JAS_DIR=$(cd "$(dirname "$0")" && pwd)
+JAS_DIR=$(cd "$(dirname "$0")/.." && pwd)
 cd "$JAS_DIR"
 
 echo 'JAS - installing...'
@@ -72,7 +72,7 @@ case $(uname -s) in
 
   *)
     echo "JAS: auto-start is not supported on $(uname -s) by this script." >&2
-    echo "On Windows, run install.cmd instead. Otherwise start JAS with ./jas.sh." >&2
+    echo "On Windows, run scripts\\install.cmd instead. Otherwise start JAS with ./jas.sh." >&2
     exit 1
     ;;
 esac

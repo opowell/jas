@@ -46,7 +46,7 @@ jobs:
 
           | Archive | For |
           | --- | --- |
-          | `*-portable.zip` | any platform, uses the Node.js already installed on the machine (v20+) |
+          | `*-portable.zip` | any platform, uses the Node.js already installed on the machine (v22+) |
           | `*-darwin-arm64.tar.gz` | macOS, Apple Silicon — Node.js included |
           | `*-darwin-x64.tar.gz` | macOS, Intel — Node.js included |
           | `*-linux-x64.tar.gz` | Linux, x86-64 — Node.js included |

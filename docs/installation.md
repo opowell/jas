@@ -22,7 +22,7 @@ These archives contain everything needed to run: a Node.js runtime under
 
 ## Option 2 — clone or download the repository
 
-Requires [Node.js](https://nodejs.org) 20 or later on the machine.
+Requires [Node.js](https://nodejs.org) 22 or later on the machine.
 
 ```sh
 git clone https://github.com/opowell/jas.git
@@ -84,7 +84,7 @@ Silicon Mac it answers `x86_64`, and step 1 would then walk straight past the
 `arm64` runtime sitting in the archive. Rather than trust the label, the
 launcher runs the binary and keeps the first one that works.
 
-If none of those exist, or the version found is older than 20, the launcher says
+If none of those exist, or the version found is older than 22, the launcher says
 so and stops.
 
 ## Auto-start on login
@@ -92,7 +92,7 @@ so and stops.
 ### macOS
 
 ```sh
-./install.sh
+./scripts/install.sh
 ```
 
 Generates `server/localhost.jas.plist` from the template with this project's
@@ -106,7 +106,7 @@ Check it: `launchctl list | grep jas`
 ### Linux
 
 ```sh
-./install.sh
+./scripts/install.sh
 ```
 
 Generates a systemd **user** service at `~/.config/systemd/user/jas.service`,
@@ -119,7 +119,7 @@ Follow its output: `journalctl --user -u jas -f`
 ### Windows
 
 ```
-install.cmd
+scripts\install.cmd
 ```
 
 Registers a Scheduled Task named `JAS` that runs `jas.cmd` at logon.
@@ -130,11 +130,11 @@ Start it now, without logging out: `schtasks /run /tn JAS`
 ## Uninstall auto-start
 
 ```sh
-./uninstall.sh     # macOS, Linux
+./scripts/uninstall.sh     # macOS, Linux
 ```
 
 ```
-uninstall.cmd      REM Windows
+scripts\uninstall.cmd      REM Windows
 ```
 
 This removes the launchd agent / systemd unit / scheduled task. Project files
