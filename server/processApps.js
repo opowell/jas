@@ -2,6 +2,11 @@ import express from 'express'
 import path from 'path'
 import fs from 'fs'
 import { pathToFileURL } from 'url'
+import { getProjectRoot } from './projectRoot.js'
+
+// Libraries that ship with JAS (e.g. built-in-apps/vue-global) live here, so
+// they are available to every app without being copied into each apps/ folder.
+const BUILT_IN_APPS_PATH = path.join(getProjectRoot(), 'server', 'built-in-apps')
 
 // Every top-level folder under appsPath, app or not (shared-library
 // folders included).
@@ -149,6 +154,17 @@ const loadServerProcesses = async (router, app, appFolder, servers, httpServer) 
   }
 }
 
+// A "sharedApps" entry names a folder alongside the app, falling back to the
+// libraries that ship with JAS, so an app in apps/ can use e.g. "vue-global"
+// without keeping its own copy of it. Returns null if neither root has it.
+const resolveSharedApp = (appsPath, sharedAppId) => {
+  for (const root of [appsPath, BUILT_IN_APPS_PATH]) {
+    const folder = path.join(root, sharedAppId)
+    if (fs.existsSync(folder)) return folder
+  }
+  return null
+}
+
 // Mounts an app's own static files, then any folders it names in
 // settings.json's "sharedApps" as fallbacks, in order, for files the app
 // doesn't have its own copy of. express.static calls next() on a missing
@@ -156,7 +172,12 @@ const loadServerProcesses = async (router, app, appFolder, servers, httpServer) 
 const registerStatic = (router, app, appFolder, appsPath, sharedApps) => {
   router.use('/' + app.id, express.static(appFolder, { index: false }))
   for (const sharedAppId of sharedApps) {
-    router.use('/' + app.id, express.static(path.join(appsPath, sharedAppId), { index: false }))
+    const folder = resolveSharedApp(appsPath, sharedAppId)
+    if (folder === null) {
+      console.error('sharedApps entry not found for ' + app.id + ': ' + sharedAppId)
+      continue
+    }
+    router.use('/' + app.id, express.static(folder, { index: false }))
   }
 }
 

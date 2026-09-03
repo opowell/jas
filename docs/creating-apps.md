@@ -58,7 +58,12 @@ See `apps/multi-view-counter/` for a working example.
 
 ## Shared libraries
 
-A library used by multiple apps gets its own folder under `apps/`, one file per folder — e.g. `apps/vue-global/vue.global.js`, `apps/vue3-sfc-loader/vue3-sfc-loader.js`, `apps/web437-ibm-vga-8x14/Web437_IBM_VGA_8x14.woff`. These folders aren't apps themselves — they have no `index.html`, so they're excluded from the Launchpad and the `/apps` list — but each is still served at its own path (e.g. `/vue-global/vue.global.js`).
+A library used by multiple apps gets its own folder, one file per folder — e.g. `vue-global/vue.global.js`, `vue3-sfc-loader/vue3-sfc-loader.js`, `web437-ibm-vga-8x14/Web437_IBM_VGA_8x14.woff`. These folders aren't apps themselves — they have no `index.html`, so they're excluded from the Launchpad and the `/apps` list — but each is still served at its own path (e.g. `/vue-global/vue.global.js`).
+
+Library folders live in one of two places:
+
+- `server/built-in-apps/` — libraries that ship with JAS, available on every install. `vue-global` and `vue3-sfc-loader` are there.
+- `apps/` — libraries you add yourself, alongside your own apps.
 
 An app references the specific library folders it needs in `settings.json`:
 
@@ -68,7 +73,9 @@ An app references the specific library folders it needs in `settings.json`:
 }
 ```
 
-Each named folder is mounted as a fallback under the app's own path, in order, for any file the app doesn't have a local copy of — so `<script src="vue.global.js">` in the app's `index.html` resolves to `apps/vue-global/vue.global.js` with no changes needed. If the app has its own copy of a file, that copy is always served instead of the shared one.
+Each named folder is mounted as a fallback under the app's own path, in order, for any file the app doesn't have a local copy of — so `<script src="vue.global.js">` in the app's `index.html` resolves to the shared `vue.global.js` with no changes needed. If the app has its own copy of a file, that copy is always served instead of the shared one.
+
+A name is looked up next to the app first, then in `server/built-in-apps/`, so an app in `apps/` can name `vue-global` without keeping its own copy — and a local `apps/vue-global/` still overrides the built-in one. A name found in neither place is logged to the console at startup and skipped.
 
 ## Downloadable example apps
 

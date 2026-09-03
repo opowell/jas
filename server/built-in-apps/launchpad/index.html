@@ -1,7 +1,7 @@
 <html lang="en">
   <head>
-    <script type="text/javascript" src="vue.global.js"></script>
-    <script type="text/javascript" src="vue3-sfc-loader.js"></script>
+    <script type="text/javascript" src="/vue-global/vue.global.js"></script>
+    <script type="text/javascript" src="/vue3-sfc-loader/vue3-sfc-loader.js"></script>
     <link rel="stylesheet" href="styles.css" />
     <title>Launchpad</title>
   </head>
@@ -10,10 +10,11 @@
       <div class="apps-container">
         <div class="apps">
           <launchpad-app
-            v-for="app in apps"
+            v-for="(app, index) in apps"
             :key="app.id"
             :app="app"
-            @click="handleAppClick(app.id)"
+            :selected="index === selectedIndex"
+            @click="select(index); handleAppClick(app.id)"
           />
         </div>
       </div>
