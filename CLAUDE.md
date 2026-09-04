@@ -10,13 +10,13 @@ at the machine and whatever another session is doing:
 ~/.claude/bin/screen-busy.sh run --message "what you are doing" -- <command>
 ```
 
-`run` takes the lock, raises a marker (a red frame around every display plus a
-caption saying what is going on), runs the command, and releases on every exit
-path — a failing command and Ctrl-C included. Use `start` / `stop` when the
-work spans several commands, such as opening a page, poking at it and closing
-it again; `stop` is then not optional, because the marker is what tells the
-user the machine is theirs again. `pause` / `resume` hide the marker around a
-screenshot so it does not land in the capture.
+`run` takes the lock, raises a marker (a solid red bar across the top of every
+display, captioned with what is going on and for how long), runs the command,
+and releases on every exit path — a failing command and Ctrl-C included. Use
+`start` / `stop` when the work spans several commands, such as opening a page,
+poking at it and closing it again; `stop` is then not optional, because the
+marker is what tells the user the machine is theirs again. `pause` / `resume`
+hide the marker around a screenshot so it does not land in the capture.
 
 An owner is a worktree root, so this repo and any other contend as separate
 parties. When another session holds the lock, `start` and `run` refuse with
