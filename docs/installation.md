@@ -65,7 +65,8 @@ On this network: http://192.168.1.20:4500
 Open either in a browser to reach the Launchpad. Use the second one from phones
 and other machines on the same network.
 
-The port comes from `"port"` in [server/settings.json](../server/settings.json).
+The port comes from `"port"` in [server/settings.json](../server/settings.json),
+unless the `PORT` environment variable is set.
 
 ### Which Node.js gets used
 
@@ -146,3 +147,5 @@ are left untouched.
 | --- | --- |
 | `JAS_NODE` | Path to the `node` executable to run the server with. |
 | `JAS_HOME` | Project root to serve from (`apps/`, `logs/`, `server/settings.json`). Defaults to the folder holding `jas.sh`. |
+| `JAS_APPS` | Apps folder to serve instead of `apps/` under the project root — for a project that bundles JAS and keeps its app in its own tree. |
+| `PORT` | Port to listen on, overriding `"port"` in `server/settings.json`. |

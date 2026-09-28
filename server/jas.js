@@ -22,7 +22,9 @@ console.error = (...args) => { origError(...args); logStream.write('[ERROR] ' + 
 const importedSettingsPath = path.join(serverPath, 'server', 'settings.json')
 const importedSettings = JSON.parse(readFileSync(importedSettingsPath, 'utf8'))
 const expressApp = express()
-const port = importedSettings.port || 3000
+// PORT overrides server/settings.json, so a second JAS (a project bundling its
+// own copy, say) can run beside the usual one without editing tracked settings.
+const port = Number(process.env.PORT) || importedSettings.port || 3000
 const httpServer = createServer(expressApp)
 
 expressApp.use(express.json())
@@ -37,7 +39,12 @@ expressApp.get('/', (req, res) => {
 const builtInAppsPath = path.join(serverPath, 'server', 'built-in-apps')
 await processApps(expressApp, builtInAppsPath, httpServer)
 
-const appsPath = path.join(serverPath, 'apps')
+// JAS_APPS points the server at an apps folder outside the JAS tree. That is
+// how a project that carries JAS as a submodule hosts its own app: it keeps the
+// app in its own repo and never writes into the submodule's checkout.
+const appsPath = process.env.JAS_APPS
+  ? path.resolve(process.env.JAS_APPS)
+  : path.join(serverPath, 'apps')
 mkdirSync(appsPath, { recursive: true })
 let appsRouter = await createAppsRouter(appsPath, httpServer)
 expressApp.use((req, res, next) => appsRouter(req, res, next))
