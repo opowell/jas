@@ -30,16 +30,11 @@ const httpServer = createServer(expressApp)
 expressApp.use(express.json())
 expressApp.use(express.urlencoded({ extended: true }))
 
-// JAS_DEFAULT_APP names an app in the apps folder to open at /, in place of the
-// built-in start page, so a project bundling JAS for one app lands straight on
-// it. The start page redirects there rather than serving it, keeping the app's
-// relative URLs under its own route.
+// JAS_DEFAULT_APP names an app in the apps folder to serve at / in place of the
+// built-in start page (see the apps router below), so a project bundling JAS
+// for one app opens straight on it.
 const defaultAppId = process.env.JAS_DEFAULT_APP
-if (defaultAppId) {
-  expressApp.get('/', (req, res) => {
-    res.redirect('/' + encodeURIComponent(defaultAppId) + '/')
-  })
-} else {
+if (!defaultAppId) {
   const defaultAppPath = path.join(serverPath, 'server', 'built-in-apps', importedSettings.defaultApp)
   expressApp.use('/', express.static(defaultAppPath))
   expressApp.get('/', (req, res) => {
@@ -58,6 +53,22 @@ const appsPath = process.env.JAS_APPS
   : path.join(serverPath, 'apps')
 mkdirSync(appsPath, { recursive: true })
 let appsRouter = await createAppsRouter(appsPath, httpServer)
+// The default app is served at / as well as under its own route: a request is
+// first tried as a path inside that app, so the page at / and every relative
+// URL it uses (scripts, styles, its API) resolve there. Whatever the app does
+// not handle falls through unchanged to the other apps and JAS's own routes.
+if (defaultAppId) {
+  const appPrefix = '/' + defaultAppId
+  expressApp.use((req, res, next) => {
+    if (req.path === appPrefix || req.path.startsWith(appPrefix + '/')) return next()
+    const url = req.url
+    req.url = appPrefix + url
+    appsRouter(req, res, () => {
+      req.url = url
+      next()
+    })
+  })
+}
 expressApp.use((req, res, next) => appsRouter(req, res, next))
 
 expressApp.get('/apps', (req, res) => {
