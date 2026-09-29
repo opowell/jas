@@ -30,11 +30,22 @@ const httpServer = createServer(expressApp)
 expressApp.use(express.json())
 expressApp.use(express.urlencoded({ extended: true }))
 
-const defaultAppPath = path.join(serverPath, 'server', 'built-in-apps', importedSettings.defaultApp)
-expressApp.use('/', express.static(defaultAppPath))
-expressApp.get('/', (req, res) => {
-  res.sendFile(path.join(defaultAppPath, 'index.html'))
-})
+// JAS_DEFAULT_APP names an app in the apps folder to open at /, in place of the
+// built-in start page, so a project bundling JAS for one app lands straight on
+// it. The start page redirects there rather than serving it, keeping the app's
+// relative URLs under its own route.
+const defaultAppId = process.env.JAS_DEFAULT_APP
+if (defaultAppId) {
+  expressApp.get('/', (req, res) => {
+    res.redirect('/' + encodeURIComponent(defaultAppId) + '/')
+  })
+} else {
+  const defaultAppPath = path.join(serverPath, 'server', 'built-in-apps', importedSettings.defaultApp)
+  expressApp.use('/', express.static(defaultAppPath))
+  expressApp.get('/', (req, res) => {
+    res.sendFile(path.join(defaultAppPath, 'index.html'))
+  })
+}
 
 const builtInAppsPath = path.join(serverPath, 'server', 'built-in-apps')
 await processApps(expressApp, builtInAppsPath, httpServer)

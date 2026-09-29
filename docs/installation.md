@@ -148,4 +148,5 @@ are left untouched.
 | `JAS_NODE` | Path to the `node` executable to run the server with. |
 | `JAS_HOME` | Project root to serve from (`apps/`, `logs/`, `server/settings.json`). Defaults to the folder holding `jas.sh`. |
 | `JAS_APPS` | Apps folder to serve instead of `apps/` under the project root — for a project that bundles JAS and keeps its app in its own tree. |
+| `JAS_DEFAULT_APP` | App in the apps folder that `/` redirects to, in place of the built-in start page. |
 | `PORT` | Port to listen on, overriding `"port"` in `server/settings.json`. |
