@@ -37,7 +37,8 @@ const getApps = (appsPath) => {
   const appFolders = listFolders(appsPath).filter(f => isApp(appsPath, f))
   return appFolders.map(f => {
     const out = {
-      id: f
+      id: f,
+      route: getAppSettings(path.join(appsPath, f)).route
     }
     if (fs.existsSync(path.join(appsPath, f, 'preview.png'))) {
       out.previewImage = 'preview.png'
@@ -57,6 +58,19 @@ const normalizePaths = (value, defaultValue) => {
   return [value]
 }
 
+// An app is served under "/<folder name>" unless settings.json's "route" names
+// another path, e.g. "/lab". Normalized to one leading slash and no trailing one.
+const normalizeRoute = (value, appFolder) => {
+  const fallback = '/' + path.basename(appFolder)
+  if (value === undefined) return fallback
+  const route = '/' + String(value).replace(/^\/+|\/+$/g, '')
+  if (route === '/') {
+    console.error('route "' + value + '" ignored for ' + appFolder + ', serving it at ' + fallback + ' (use JAS_DEFAULT_APP to serve an app at /)')
+    return fallback
+  }
+  return route
+}
+
 const getAppSettings = (appFolder) => {
   const settingsFile = path.join(appFolder, 'settings.json')
   let settings = {}
@@ -68,6 +82,7 @@ const getAppSettings = (appFolder) => {
     }
   }
   return {
+    route: normalizeRoute(settings.route, appFolder),
     clients: normalizePaths(settings.clients, DEFAULT_CLIENTS),
     servers: normalizePaths(settings.servers, DEFAULT_SERVERS),
     // Set to false when a server module (see loadServerProcesses) fully owns its
@@ -113,7 +128,7 @@ const registerFolderClient = (router, app, appFolder, clientPath) => {
   const routePrefix = prefix ? '/' + prefix.split(path.sep).join('/') : ''
   for (const relDir of findIndexHtmlDirs(folder)) {
     const routeSuffix = relDir ? '/' + relDir.split(path.sep).join('/') : ''
-    const route = '/' + app.id + routePrefix + routeSuffix
+    const route = app.route + routePrefix + routeSuffix
     const file = path.join(folder, relDir, 'index.html')
     router.get(route, (req, res) => {
       res.sendFile(file)
@@ -127,7 +142,7 @@ const registerClients = (router, app, appFolder, clients) => {
     if (fs.existsSync(resolved) && fs.statSync(resolved).isDirectory()) {
       registerFolderClient(router, app, appFolder, clientPath)
     } else {
-      const route = '/' + app.id + clientRoute(clientPath)
+      const route = app.route + clientRoute(clientPath)
       router.get(route, (req, res) => {
         res.sendFile(resolved)
       })
@@ -170,14 +185,14 @@ const resolveSharedApp = (appsPath, sharedAppId) => {
 // doesn't have its own copy of. express.static calls next() on a missing
 // file, so the app's own files always take priority over shared ones.
 const registerStatic = (router, app, appFolder, appsPath, sharedApps) => {
-  router.use('/' + app.id, express.static(appFolder, { index: false }))
+  router.use(app.route, express.static(appFolder, { index: false }))
   for (const sharedAppId of sharedApps) {
     const folder = resolveSharedApp(appsPath, sharedAppId)
     if (folder === null) {
       console.error('sharedApps entry not found for ' + app.id + ': ' + sharedAppId)
       continue
     }
-    router.use('/' + app.id, express.static(folder, { index: false }))
+    router.use(app.route, express.static(folder, { index: false }))
   }
 }
 
@@ -192,33 +207,44 @@ const registerLibraryFolderStatics = (router, appsPath, appIds) => {
   }
 }
 
-const processApps = async (expressApp, appsPath, httpServer) => {
+// The router each app's server modules registered their routes on, by app
+// folder. A server module runs once per server process: /refresh rebuilds the
+// static and client routes but mounts the router from the first load again,
+// since running a module twice would set up its state (and anything it
+// attached to the HTTP server, like a WebSocket server) a second time.
+const serverRouters = new Map()
+
+const getServerRouter = async (app, appFolder, servers, httpServer) => {
+  if (!serverRouters.has(appFolder)) {
+    const serverRouter = express.Router()
+    await loadServerProcesses(serverRouter, app, appFolder, servers, httpServer)
+    serverRouters.set(appFolder, serverRouter)
+  }
+  return serverRouters.get(appFolder)
+}
+
+const registerApps = async (target, appsPath, httpServer) => {
   console.log('loading apps: ' + appsPath)
   const apps = getApps(appsPath)
-  registerLibraryFolderStatics(expressApp, appsPath, new Set(apps.map(a => a.id)))
-  for (const app of apps) {
-    const appFolder = path.join(appsPath, app.id)
+  registerLibraryFolderStatics(target, appsPath, new Set(apps.map(a => a.id)))
+  for (const { id, route } of apps) {
+    const app = { id, route }
+    const appFolder = path.join(appsPath, id)
     const { clients, servers, sharedApps, serveStatic } = getAppSettings(appFolder)
-    if (serveStatic) registerStatic(expressApp, app, appFolder, appsPath, sharedApps)
-    registerClients(expressApp, app, appFolder, clients)
-    await loadServerProcesses(expressApp, app, appFolder, servers, httpServer)
-    console.log('loaded app: ' + app.id, appFolder)
+    if (serveStatic) registerStatic(target, app, appFolder, appsPath, sharedApps)
+    registerClients(target, app, appFolder, clients)
+    target.use(await getServerRouter(app, appFolder, servers, httpServer))
+    console.log('loaded app: ' + id + ' at ' + route, appFolder)
   }
+}
+
+const processApps = async (expressApp, appsPath, httpServer) => {
+  await registerApps(expressApp, appsPath, httpServer)
 }
 
 const createAppsRouter = async (appsPath, httpServer) => {
   const router = express.Router()
-  console.log('loading apps: ' + appsPath)
-  const apps = getApps(appsPath)
-  registerLibraryFolderStatics(router, appsPath, new Set(apps.map(a => a.id)))
-  for (const app of apps) {
-    const appFolder = path.join(appsPath, app.id)
-    const { clients, servers, sharedApps, serveStatic } = getAppSettings(appFolder)
-    if (serveStatic) registerStatic(router, app, appFolder, appsPath, sharedApps)
-    registerClients(router, app, appFolder, clients)
-    await loadServerProcesses(router, app, appFolder, servers, httpServer)
-    console.log('loaded app: ' + app.id, appFolder)
-  }
+  await registerApps(router, appsPath, httpServer)
   return router
 }
 

@@ -58,7 +58,8 @@ let appsRouter = await createAppsRouter(appsPath, httpServer)
 // URL it uses (scripts, styles, its API) resolve there. Whatever the app does
 // not handle falls through unchanged to the other apps and JAS's own routes.
 if (defaultAppId) {
-  const appPrefix = '/' + defaultAppId
+  const defaultApp = getApps(appsPath).find(a => a.id === defaultAppId)
+  const appPrefix = defaultApp ? defaultApp.route : '/' + defaultAppId
   expressApp.use((req, res, next) => {
     if (req.path === appPrefix || req.path.startsWith(appPrefix + '/')) return next()
     const url = req.url

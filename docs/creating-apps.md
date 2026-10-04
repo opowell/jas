@@ -2,7 +2,7 @@
 
 ## Basics
 
-Create a sub-folder inside the top-level `apps/` directory. The folder name becomes the app's URL path and its display name in the Launchpad.
+Create a sub-folder inside the top-level `apps/` directory. The folder name becomes the app's URL path (unless its `settings.json` names another, see [Route](#route)) and its display name in the Launchpad.
 
 ```
 apps/
@@ -50,11 +50,23 @@ By default an app serves `./index.html` as its client and loads `./server.js` as
 ```
 
 - `clients` / `servers` may be omitted, a single string, or an array of strings.
-- Each client file is served at `/<app-id>` (for `index.html`) or `/<app-id>/<name>` for any other file — e.g. `./admin.html` → `/my-app/admin`.
+- Each client file is served at the app's route, `/<app-id>` unless `route` says otherwise (for `index.html`), or `/<app-id>/<name>` for any other file — e.g. `./admin.html` → `/my-app/admin`.
 - If a `clients` entry points at a folder instead of a file, it's searched recursively for `index.html` files, each served at a route mirroring its location. For example, with `"clients": "./"` and files `./index.html` and `./app1/index.html`, `/my-app` serves the first and `/my-app/app1` serves the second.
 - Each server file is loaded the same way a single `server.js` is (see [Server processes](./server-processes.md)).
 
 See `apps/multi-view-counter/` for a working example.
+
+## Route
+
+An app is served under `/<app-id>`. To serve it somewhere else, set `route` in its `settings.json`:
+
+```json
+{
+  "route": "/lab"
+}
+```
+
+The app's static files, client pages and Launchpad tile then use `/lab` instead of `/my-app`, and server modules get it as `app.route` (see [Server processes](./server-processes.md)). A route is one or more path segments; `/` is not allowed (use `JAS_DEFAULT_APP` to serve an app at the root, see [Installation](./installation.md#environment-variables)).
 
 ## Shared libraries
 

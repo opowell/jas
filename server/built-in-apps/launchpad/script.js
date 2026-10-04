@@ -51,8 +51,8 @@ window.launchpad.init = () => {
         // The first app starts highlighted, so the keyboard is usable
         // the moment the page loads.
         const selectedIndex = ref(0)
-        const handleAppClick = (id) => {
-          window.location.href = window.location.origin + '/' + id
+        const handleAppClick = (app) => {
+          window.location.href = window.location.origin + app.route
         }
 
         const select = (index) => {
@@ -134,7 +134,7 @@ window.launchpad.init = () => {
             case 'Enter':
             case ' ':
               if (selectedIndex.value >= 0) {
-                handleAppClick(apps.value[selectedIndex.value].id)
+                handleAppClick(apps.value[selectedIndex.value])
               }
               break
             case 'Escape':

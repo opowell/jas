@@ -1,7 +1,7 @@
 <template>
   <div class="app" :class="{ selected }">
     <div class="app-icon">
-      <img v-if="app.previewImage" :src="app.id + '/' + app.previewImage">
+      <img v-if="app.previewImage" :src="app.route + '/' + app.previewImage">
       <span v-else>{{ app.id[0].toUpperCase() }}</span></div>
     <div class="app-name">{{ app.id }}</div>
   </div>
