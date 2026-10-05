@@ -39,11 +39,12 @@ archives locally, and what ends up inside one.
 ## Local helpers
 
 ```sh
-./scripts/kill-3000.sh    # free port 3000 if something is stuck on it
+./scripts/kill-port.sh        # stop the server stuck on port 3000 (or $PORT)
+./scripts/kill-port.sh 4500   # ... or on another port
 ```
 
 Only the installers ship in the release archives. `release.sh`,
-`build-release.mjs` and `kill-3000.sh` are marked `export-ignore` in
+`build-release.mjs` and `kill-port.sh` are marked `export-ignore` in
 [.gitattributes](../.gitattributes), so they are stripped out along with the CI
 and editor config.
 
