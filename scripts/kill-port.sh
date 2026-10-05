@@ -8,6 +8,13 @@
 
 port=${1:-${PORT:-3000}}
 
+# lsof lives in /usr/sbin on macOS, which a minimal PATH leaves out.
+PATH="$PATH:/usr/sbin:/sbin"
+if ! command -v lsof >/dev/null 2>&1; then
+  echo "kill-port: needs lsof, which is not installed" >&2
+  exit 1
+fi
+
 pids=$(lsof -ti "tcp:$port" -sTCP:LISTEN)
 if [ -z "$pids" ]; then
   echo "Nothing is listening on port $port"
